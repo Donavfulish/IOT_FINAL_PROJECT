@@ -1,5 +1,8 @@
 import WebSocket from "ws";
-import { initDeviceService, handleEspMessageFromMqtt } from "../services/device.service.js";
+import {
+  initDeviceService,
+  handleEspMessageFromMqtt,
+} from "../services/device.services.js";
 
 /* eslint-disable no-console */
 export default function initWebSocket(server, mqttClient) {

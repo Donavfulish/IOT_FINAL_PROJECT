@@ -1,4 +1,4 @@
-import { sendCommandToDevice } from "../services/device.service.js";
+import { sendCommandToDevice } from "../services/device.services.js";
 
 export const openLid = (req, res) => {
   try {

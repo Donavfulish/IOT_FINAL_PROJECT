@@ -7,6 +7,7 @@ import { AlertItem } from "@/components/AlertItem/AlertItem";
 import TemperatureChart from "@/components/TemperatureChart/TemperatureChart";
 import LCDSetting from "@/components/LCDSetting"
 import LEDSetting from "@/components/LEDSetting"
+import QuickStatus from "@/components/QuickStatus/QuickStatus";
 
 export default function Home() {
   const [msg, setMsg] = useState("");
@@ -23,6 +24,7 @@ export default function Home() {
       <div className="w-100 flex flex-col gap-5">
         <LEDSetting/>
         <LCDSetting/>
+        <QuickStatus/>
       </div>
     </div>
   )

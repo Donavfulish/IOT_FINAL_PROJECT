@@ -1,135 +1,97 @@
-"use client"
+import React from 'react';
 
-export interface Bin {
-    id: string
-    name: string
-    status: "operational" | "warning" | "critical"
-    fillLevel: number
-    battery: number
-    temperature: number
-    lastUpdated: string
+interface BinData {
+  binId: string;
+  status: 'OPERATIONAL' | 'WARNING' | 'FULL' | 'MAINTENANCE';
+  fillLevel: number;
+  battery: number;
+  temperature: number;
 }
 
-const bins: Bin[] = [
-    {
-        id: "BIN-76623",
-        name: "Bin 76623",
-        status: "operational",
-        fillLevel: 45,
-        battery: 85,
-        temperature: 28,
-        lastUpdated: "2025-11-03 09:12:00Z",
-    },
-    {
-        id: "BIN-88901",
-        name: "Bin 88901",
-        status: "warning",
-        fillLevel: 78,
-        battery: 35,
-        temperature: 32,
-        lastUpdated: "2025-11-03 08:00:00Z",
-    },
-    {
-        id: "BIN-34567",
-        name: "Bin 34567",
-        status: "critical",
-        fillLevel: 95,
-        battery: 12,
-        temperature: 35,
-        lastUpdated: "2025-11-03 07:15:00Z",
-    },
-    {
-        id: "BIN-45678",
-        name: "Bin 45678",
-        status: "operational",
-        fillLevel: 32,
-        battery: 92,
-        temperature: 26,
-        lastUpdated: "2025-11-03 09:00:00Z",
-    },
-]
+const BinCard: React.FC = () => {
+  // Mock data cho thùng rác
+  const binData: BinData = {
+    binId: 'BIN-76623',
+    status: 'OPERATIONAL',
+    fillLevel: 45,
+    battery: 85,
+    temperature: 28
+  };
 
-export default function BinCard(bin: Bin) {
-
-    const getStatusColor = (status: string) => {
-        switch (status) {
-            case "operational":
-                return "bg-[#5DE29A]/20 text-[#5DE29A] border-[#5DE29A]/40"
-            case "warning":
-                return "bg-[#FFB86B]/20 text-[#FFB86B] border-[#FFB86B]/40"
-            case "critical":
-                return "bg-[#FF3B30]/20 text-[#FF3B30] border-[#FF3B30]/40"
-            default:
-                return "bg-muted/20 text-muted-foreground"
-        }
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'OPERATIONAL':
+        return 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+      case 'WARNING':
+        return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
+      case 'FULL':
+        return 'bg-red-500/20 text-red-400 border-red-500/30';
+      case 'MAINTENANCE':
+        return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+      default:
+        return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
     }
+  };
 
-    const getStatusBadgeText = (status: string) => {
-        switch (status) {
-            case "operational":
-                return "OPERATIONAL"
-            case "warning":
-                return "WARNING"
-            case "critical":
-                return "CRITICAL"
-            default:
-                return "UNKNOWN"
-        }
-    }
+  const getFillLevelColor = (level: number) => {
+    if (level < 50) return 'bg-emerald-400';
+    if (level < 75) return 'bg-yellow-400';
+    return 'bg-red-400';
+  };
 
-    const getStatusBarColor = (status: string) => {
-        switch (status) {
-            case "operational":
-                return "bg-[#5DE29A]"
-            case "warning":
-                return "bg-[#FFB86B]"
-            case "critical":
-                return "bg-[#FF3B30]"
-            default:
-                return "bg-primary"
-        }
-    }
-
-    return (
-        <div className="card-glass card-border rounded-xl p-5 hover:border-primary/60 transition-all hover:shadow-lg hover:shadow-primary/10 h-full group cursor-pointer">
-            <div className="flex items-start justify-between mb-3">
-                <div className="flex-1">
-                    <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
-                        {bin.id}
-                    </h3>
-                </div>
-                <div className={`px-2.5 py-1 rounded-lg text-xs font-bold border ${getStatusColor(bin.status)}`}>
-                    {getStatusBadgeText(bin.status)}
-                </div>
-            </div>
-
-            <div className="space-y-4">
-                {/* Fill Level */}
-                <div>
-                    <div className="flex justify-between items-center mb-2">
-                        <span className="text-xs text-muted-foreground">Fill Level</span>
-                        <span className="text-sm font-semibold text-foreground">{bin.fillLevel}%</span>
-                    </div>
-                    <div className="w-full bg-secondary/50 rounded-full h-2.5 overflow-hidden">
-                        <div
-                            className={`h-full rounded-full transition-all ${getStatusBarColor(bin.status)}`}
-                            style={{ width: `${bin.fillLevel}%` }}
-                        />
-                    </div>
-                </div>
-
-                {/* Stats */}
-                <div className="grid grid-cols-2 gap-3 pt-2 border-t border-border/30">
-                    <div className="bg-secondary/30 rounded-lg p-2">
-                        <p className="text-xs text-muted-foreground mb-1">Battery</p>
-                        <p className="text-sm font-bold text-[#00C2FF]">{bin.battery}%</p>
-                    </div>
-                    <div className="bg-secondary/30 rounded-lg p-2">
-                        <p className="text-xs text-muted-foreground mb-1">Temp</p>
-                        <p className="text-sm font-bold text-[#5DE29A]">{bin.temperature}°C</p>
-                    </div>
-                </div>
-            </div>
+  return (
+    <div className="min-h-screen bg-gray-950 p-6 flex items-center justify-center">
+      <div className="w-full max-w-2xl bg-gray-900 rounded-3xl p-8 shadow-2xl border border-gray-800">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-3xl font-bold text-white tracking-wide">
+            {binData.binId}
+          </h2>
+          <div className={`px-6 py-2 rounded-full border ${getStatusColor(binData.status)}`}>
+            <span className="text-sm font-semibold tracking-wider">
+              {binData.status}
+            </span>
+          </div>
         </div>
-    )
-}
+
+        {/* Fill Level Section */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-gray-400 text-lg">Fill Level</span>
+            <span className="text-white text-3xl font-bold">{binData.fillLevel}%</span>
+          </div>
+          <div className="w-full bg-gray-800 rounded-full h-3 overflow-hidden">
+            <div
+              className={`h-full rounded-full transition-all duration-500 ${getFillLevelColor(binData.fillLevel)}`}
+              style={{ width: `${binData.fillLevel}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div className="border-t border-gray-800 my-8"></div>
+
+        {/* Battery and Temperature */}
+        <div className="grid grid-cols-2 gap-3">
+          {/* Battery */}
+          <div className='bg-gray-800 rounded-lg py-3 px-5'>
+            <div className="text-gray-400 text-lg mb-3">Battery</div>
+            <div className="text-cyan-400 text-2xl font-bold">
+              {binData.battery}%
+            </div>
+          </div>
+
+          {/* Temperature */}
+          <div className='bg-gray-800 rounded-lg py-3 px-5'>
+            <div className="text-gray-400 text-lg mb-3">Temp</div>
+            <div className="text-emerald-400 text-2xl font-bold">
+              {binData.temperature}°C
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default BinCard;

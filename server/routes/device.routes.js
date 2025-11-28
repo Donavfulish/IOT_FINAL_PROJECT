@@ -1,8 +1,9 @@
 import { Router } from "express";
-import { openLid } from "../controllers/device.controller.js";
+import { openLed, messageToOled } from "../controllers/device.controller.js";
 
 const router = Router();
 
-router.get("/open-lid", openLid);
+router.get("/open-led", openLed);
+router.get("/message-to-oled", messageToOled);
 
 export default router;

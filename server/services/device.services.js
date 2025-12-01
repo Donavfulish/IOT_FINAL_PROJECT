@@ -38,8 +38,10 @@ export const handleEspMessageFromMqtt = (topic, message) => {
 
   if (device === "button") {
     console.log(data);
-  } else {
-    console.log("Not button");
+  }
+
+  if (device === "ultra") {
+    console.log(data);
   }
   if (!wssRef) return;
   wssRef.clients.forEach((client) => {

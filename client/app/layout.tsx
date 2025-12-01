@@ -27,10 +27,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="text-white">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Header accountRole="user"/>
-        <DetailHeader/>
-        <FlowbiteInit/>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        <FlowbiteInit />
         {children}
       </body>
     </html>

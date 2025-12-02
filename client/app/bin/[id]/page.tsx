@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { MessageSquare, ArrowLeft, Lightbulb, Thermometer, Droplets } from "lucide-react"
 import TemperatureChart from "@/components/TemperatureChart"
 import { use } from "react"
+import { useGetOled } from "@/hook/useOled"
 
 interface BinData {
     id: string
@@ -20,17 +21,43 @@ interface BinData {
 }
 
 export default function BinDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+
+    const { id } = use(params)
+    const [lcdMessageData, setLcdMessageData] = useState<string | null>(null)
+    const binId = `BIN-${id.toUpperCase()}`
+
     const [isAuthenticated, setIsAuthenticated] = useState(true)
     const [lcdMode, setLcdMode] = useState<"fillLevel" | "message">("message")
-    const [lcdMessage, setLcdMessage] = useState("Welcome to Solar Smart Bin")
-    const [newMessage, setNewMessage] = useState(lcdMessage)
+    const [lcdMessage, setLcdMessage] = useState<string>("no message")
+    const [newMessage, setNewMessage] = useState<string>("no message")
     const [ledEnabled, setLedEnabled] = useState(true)
+
+    useEffect(() => {
+        let mounted = true
+        async function fetchOled() {
+            try {
+                const res = await useGetOled(id)
+                const data = (res as any)?.data ?? res
+                if (mounted) {
+                    setLcdMessageData(data.result.message ?? "no message")
+                }
+            } catch (e) {
+                if (mounted) setLcdMessageData("no message")
+            }
+        }
+        fetchOled()
+        return () => { mounted = false }
+    }, [id])
+
+    useEffect(() => {
+        if (lcdMessageData !== null && lcdMessageData !== undefined) {
+            setLcdMessage(String(lcdMessageData))
+            setNewMessage(String(lcdMessageData))
+        }
+    }, [lcdMessageData])
     const [ledSchedule, setLedSchedule] = useState("manual")
     const [ledStartTime, setLedStartTime] = useState("18:00")
     const [ledEndTime, setLedEndTime] = useState("06:00")
-
-    const { id } = use(params)
-    const binId = `BIN-${id.toUpperCase()}`
 
     // Mock bin data
     const binData: BinData = {
@@ -186,8 +213,8 @@ export default function BinDetailsPage({ params }: { params: Promise<{ id: strin
                                         <button
                                             onClick={() => setLcdMode("fillLevel")}
                                             className={`flex-1 px-3 py-2 rounded text-xs font-medium transition-colors ${lcdMode === "fillLevel"
-                                                    ? "bg-primary text-primary-foreground"
-                                                    : "bg-secondary text-foreground hover:bg-secondary/80"
+                                                ? "bg-primary text-primary-foreground"
+                                                : "bg-secondary text-foreground hover:bg-secondary/80"
                                                 }`}
                                         >
                                             Fill Level
@@ -195,8 +222,8 @@ export default function BinDetailsPage({ params }: { params: Promise<{ id: strin
                                         <button
                                             onClick={() => setLcdMode("message")}
                                             className={`flex-1 px-3 py-2 rounded text-xs font-medium transition-colors ${lcdMode === "message"
-                                                    ? "bg-primary text-primary-foreground"
-                                                    : "bg-secondary text-foreground hover:bg-secondary/80"
+                                                ? "bg-primary text-primary-foreground"
+                                                : "bg-secondary text-foreground hover:bg-secondary/80"
                                                 }`}
                                         >
                                             Message

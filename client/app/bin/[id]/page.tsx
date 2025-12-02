@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { MessageSquare, ArrowLeft, Lightbulb, Thermometer, Droplets } from "lucide-react"
 import TemperatureChart from "@/components/TemperatureChart"
 import { use } from "react"
-import { useGetOled } from "@/hook/useOled"
+import { useGetOled, useUpdateOled } from "@/hook/useOled"
 
 interface BinData {
     id: string
@@ -31,6 +31,7 @@ export default function BinDetailsPage({ params }: { params: Promise<{ id: strin
     const [lcdMessage, setLcdMessage] = useState<string>("no message")
     const [newMessage, setNewMessage] = useState<string>("no message")
     const [ledEnabled, setLedEnabled] = useState(true)
+    const [isSavingMessage, setIsSavingMessage] = useState(false)
 
     useEffect(() => {
         let mounted = true
@@ -79,9 +80,31 @@ export default function BinDetailsPage({ params }: { params: Promise<{ id: strin
         }
     }, [])
 
-    const handleSaveMessage = () => {
-        setLcdMessage(newMessage)
-        setLcdMode("message")
+    async function updateOled(message: string) {
+        try {
+            const res = await useUpdateOled({ id, message })
+            const data = (res as any)?.data ?? res
+            console.log(data);
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    const handleSaveMessage = async () => {
+        setIsSavingMessage(true)
+
+        try {
+            await updateOled(newMessage)
+
+            setLcdMessage(newMessage)
+            setLcdMode("message")
+
+            alert("Saved! LCD message updated successfully.")
+        } catch (e) {
+            alert("Failed to save. Please try again.")
+        } finally {
+            setIsSavingMessage(false)
+        }
     }
 
     const getStatusColor = (status: string) => {
@@ -250,8 +273,13 @@ export default function BinDetailsPage({ params }: { params: Promise<{ id: strin
                                             />
                                             <p className="text-xs text-muted-foreground">{newMessage.length}/32 characters</p>
                                             <div className="flex gap-2">
-                                                <Button onClick={handleSaveMessage} size="sm" className="flex-1">
-                                                    Save
+                                                <Button onClick={handleSaveMessage} size="sm" className="flex-1 cursor-pointer" disabled={isSavingMessage}>
+                                                    {isSavingMessage ? (
+                                                        <div className="flex items-center gap-2">
+                                                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-t-transparent"></div>
+                                                            Saving...
+                                                        </div>
+                                                    ) : "Save"}
                                                 </Button>
                                                 <Button
                                                     onClick={() => {

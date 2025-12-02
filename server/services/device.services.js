@@ -68,3 +68,17 @@ export const getOledMessageService = async (id) => {
     }
 }
 
+export const updateOledMessageService = async(id, message) => {
+    try {
+        const sql = `
+                UPDATE public.bins  
+                SET message = $2 
+                WHERE id = $1
+                `
+        const params = [id, message];
+
+        return (await pool.query(sql, params)).rows[0];
+    } catch (error) {
+        console.log(error);
+    }
+}

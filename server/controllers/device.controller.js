@@ -1,4 +1,4 @@
-import { sendCommandToDevice, getOledMessageService } from "../services/device.services.js";
+import { sendCommandToDevice, getOledMessageService, updateOledMessageService } from "../services/device.services.js";
 
 export const openLed = (req, res) => {
     try {
@@ -41,4 +41,22 @@ export const getOledMessage = async (req, res) => {
         res.status(500).json({ ok: false, message: e.message });
     }
 };
+
+export const updateOledMessage = async (req, res) => {
+    try {
+        const {id, message} = req.body
+        const updateResult = await updateOledMessageService(id, message);
+        const espResult = sendCommandToDevice("oled", message);
+        res.json({
+            ok: true,
+            message: 'update message sucess',
+            updateResult,
+            espResult
+        })
+    } catch (e) {
+        res.status(500).json({ ok: false, message: e.message });
+    }
+};
+
+
 

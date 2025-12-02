@@ -1,0 +1,26 @@
+"use client";
+import Header from "@/components/Header";
+import DetailHeader from "@/components/DetailHeader";
+import FlowbiteInit from "@/components/FlowbiteInit";
+
+import { usePathname } from "next/navigation";
+import React from "react";
+
+const authRoutes = new Set(["/login", "/register"]);
+
+const LayoutWrapper = ({ children }: { children: React.ReactNode }) => {
+  const pathname = usePathname();
+
+  if (authRoutes.has(pathname)) return <>{children}</>;
+
+  return (
+    <>
+      <Header accountRole="user" />
+      <DetailHeader />
+      <FlowbiteInit />
+      {children}
+    </>
+  );
+};
+
+export default LayoutWrapper;

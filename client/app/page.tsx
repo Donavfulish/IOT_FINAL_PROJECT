@@ -10,10 +10,26 @@ import LEDSetting from "@/components/LEDSetting";
 import QuickStatus from "@/components/QuickStatus/QuickStatus";
 import BinCard from "@/components/BinCard/BinCard";
 import SearchBar from "@/components/SearchBar/SearchBar";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/store/auth.store";
 
 // Đây là trang dashboard
 export default function HomePage() {
   const [msg, setMsg] = useState("");
+
+  const router = useRouter();
+  const user = useAuthStore((state) => state.user);
+
+  if (user === undefined) {
+    return <div>Đang tải...</div>;
+  }
+
+  useEffect(() => {
+    // Chỉ chạy nếu đã xác định trạng thái, và người dùng chưa đăng nhập (null)
+    if (user === null) {
+      router.replace("/login");
+    }
+  }, [user, router]);
 
   useEffect(() => {
     const ws = initSocket();

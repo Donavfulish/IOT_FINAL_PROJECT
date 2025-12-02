@@ -1,6 +1,7 @@
 let mqttClientRef = null;
 let wssRef = null;
 const TOPIC_PUBLISH = "044153414/smartbin/web";
+import { sendFaultSignal } from "./button.services.js";
 
 /**
  * Inject MQTT client + WebSocket server reference
@@ -37,7 +38,7 @@ export const handleEspMessageFromMqtt = (topic, message) => {
   const device = topic.split("/").pop();
 
   if (device === "button") {
-    console.log(data);
+    if (data === "device-malfunction") sendFaultSignal(data);
   } else {
     console.log("Not button");
   }

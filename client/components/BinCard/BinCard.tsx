@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface BinData {
-  binId: string;
+  binId: number;
   status: 'OPERATIONAL' | 'WARNING' | 'FULL' | 'MAINTENANCE';
   fillLevel: number;
   battery: number;
@@ -11,7 +11,7 @@ interface BinData {
 const BinCard: React.FC = () => {
   // Mock data cho thùng rác
   const binData: BinData = {
-    binId: 'BIN-76623',
+    binId: 1,
     status: 'OPERATIONAL',
     fillLevel: 45,
     battery: 85,

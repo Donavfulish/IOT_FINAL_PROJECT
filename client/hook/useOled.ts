@@ -14,3 +14,13 @@ export const useGetOled = async (id: string) => {
         console.log(error);
     }
 }
+
+export const useUpdateOled = async (payload: {id: string, message: string}) => {
+    try {
+        const result = await api.patch(`/device/oled/`, payload);
+        console.log(result);
+        return result;
+    } catch (error) {
+        console.log(error);
+    }
+}

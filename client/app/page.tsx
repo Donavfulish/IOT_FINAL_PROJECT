@@ -17,6 +17,7 @@ import { useAuthStore } from "@/store/auth.store";
 export default function HomePage() {
   const [msg, setMsg] = useState("");
 
+  // Chuyển hướng tới /Login nếu chưa đăng nhập
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
 
@@ -25,11 +26,11 @@ export default function HomePage() {
   }
 
   useEffect(() => {
-    // Chỉ chạy nếu đã xác định trạng thái, và người dùng chưa đăng nhập (null)
     if (user === null) {
       router.replace("/login");
     }
   }, [user, router]);
+  // --------------------------------------------
 
   useEffect(() => {
     const ws = initSocket();

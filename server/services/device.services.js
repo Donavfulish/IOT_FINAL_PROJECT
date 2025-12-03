@@ -52,13 +52,17 @@ export const handleEspMessageFromMqtt = (topic, message) => {
 
 /**
  * Send data to Frontend realtime by SocketIO
+ * Payload Schema: {
+ *    id: string,
+ *    ...
+ * }
  */
 export const sendToFrontendBySocket = (payload) => {
   if (!wssRef) return;
 
   wssRef.clients.forEach((client) => {
     if (client.readyState === 1) {
-      client.send(payload);
+      client.send(JSON.stringify(payload));
     }
   });
 };

@@ -34,7 +34,14 @@ export default function HomePage() {
 
   useEffect(() => {
     const ws = initSocket();
-    ws.onmessage = (e) => setMsg(e.data);
+    ws.onmessage = (e) => {
+      const payload = JSON.parse(e.data);
+
+      if (payload.id == "button-fault-signal") {
+        console.log("Thùng rác hư");
+        setMsg("Thùng rác hư r thằng kia");
+      }
+    };
   }, []);
 
   return (

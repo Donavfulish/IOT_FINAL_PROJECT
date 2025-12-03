@@ -1,29 +1,21 @@
 import pool from "../config/db.js";
+import mqttClient from "../config/mqtt.js";
+import { wss } from "../config/websocket.js";
 
-let mqttClientRef = null;
-let wssRef = null;
 const TOPIC_PUBLISH = "044153414/smartbin/web";
 import { sendFaultSignal } from "./button.services.js";
-
-/**
- * Inject MQTT client + WebSocket server reference
- */
-export const initDeviceService = (mqttClient, wss) => {
-  mqttClientRef = mqttClient;
-  wssRef = wss;
-};
 
 /**
  * Send command from controller or WS to ESP via MQTT
  */
 export const sendCommandToDevice = (device, command) => {
-  if (!mqttClientRef || !wssRef) throw new Error("MQTT or WS not initialized");
+  if (!mqttClient || !wss) throw new Error("MQTT or WS not initialized");
 
   const payload = JSON.stringify(command);
-  mqttClientRef.publish(`${TOPIC_PUBLISH}/${device}`, payload);
+  mqttClient.publish(`${TOPIC_PUBLISH}/${device}`, payload);
 
   // Broadcast to all FE via WS
-  wssRef.clients.forEach((client) => {
+  wss.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {
       client.send(JSON.stringify({ event: "command_sent", command }));
     }
@@ -49,13 +41,13 @@ export const handleEspMessageFromMqtt = (topic, message) => {
   if (device === "ultra") {
     console.log(data);
   }
-  if (!wssRef) return;
-  wssRef.clients.forEach((client) => {
+  if (!wss) return;
+  wss.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {
       client.send(JSON.stringify({ event: "esp_update", message: data }));
     }
-    if (!wssRef) return;
-    wssRef.clients.forEach((client) => {
+    if (!wss) return;
+    wss.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
         client.send(JSON.stringify({ event: "esp_update", message: data }));
       }
@@ -71,9 +63,9 @@ export const handleEspMessageFromMqtt = (topic, message) => {
  * }
  */
 export const sendToFrontendBySocket = (payload) => {
-  if (!wssRef) return;
+  if (!wss) return;
 
-  wssRef.clients.forEach((client) => {
+  wss.clients.forEach((client) => {
     if (client.readyState === 1) {
       client.send(JSON.stringify(payload));
       console.log("sent to wss client");

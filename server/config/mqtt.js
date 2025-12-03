@@ -10,7 +10,7 @@ mqttClient.on("connect", () => {
   mqttClient.subscribe(`${TOPIC_SUBSCRIBE}/button`);
 });
 
-mqttClient.on("message", handleEspMessageFromMqtt);
+//mqttClient.on("message", handleEspMessageFromMqtt);
 
 mqttClient.on("error", (error) => {
   console.error("MQTT Error:", error);

@@ -1,13 +1,8 @@
 import WebSocket from "ws";
-import {
-  initDeviceService,
-  handleEspMessageFromMqtt,
-} from "../services/device.services.js";
+
+export let wss = null;
 
 /* eslint-disable no-console */
-export default function initWebSocket(server, mqttClient) {
-  const wss = new WebSocket.Server({ server });
-
-  // Inject MQTT + WS vào service
-  initDeviceService(mqttClient, wss);
+export function initWebSocket(server) {
+  wss = new WebSocket.Server({ server });
 }

@@ -1,60 +1,26 @@
 "use client";
-import { useEffect, useState } from "react";
-import { initSocket } from "@/lib/socket";
-import { SuggestItem } from "@/components/SuggestItem/SuggestItem";
-import { LogItem } from "@/components/LogItem/LogItem";
-import { AlertItem } from "@/components/AlertItem/AlertItem";
-import TemperatureChart from "@/components/TemperatureChart";
-import LCDSetting from "@/components/LCDSetting";
-import LEDSetting from "@/components/LEDSetting";
-import QuickStatus from "@/components/QuickStatus/QuickStatus";
+
 import BinCard from "@/components/BinCard/BinCard";
 import SearchBar from "@/components/SearchBar/SearchBar";
-import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/store/auth.store";
+import Header from "@/components/Header";
 
 // Đây là trang dashboard
 export default function HomePage() {
-  const [msg, setMsg] = useState("");
-
-  // Chuyển hướng tới /Login nếu chưa đăng nhập
-  const router = useRouter();
-  const user = useAuthStore((state) => state.user);
-
-  if (user === undefined) {
-    return <div>Đang tải...</div>;
-  }
-
-  useEffect(() => {
-    if (user === null) {
-      router.replace("/login");
-    }
-  }, [user, router]);
-  // --------------------------------------------
-
-  useEffect(() => {
-    const ws = initSocket();
-    ws.onmessage = (e) => {
-      const payload = JSON.parse(e.data);
-
-      if (payload.id == "button-fault-signal") {
-        console.log("Thùng rác hư");
-        setMsg("Thùng rác hư r thằng kia");
-      }
-    };
-  }, []);
-
   return (
-    <div className="p-10">
-      <h1 className="text-2xl font-bold">WebSocket Test</h1>
-      <p className="mt-2">Message from server: {msg}</p>
-      <div className="w-100 flex flex-col gap-5">
+    <>
+      <Header accountRole="user" />
+      <div className="p-8 bg-[#030712]">
         <SearchBar />
-        <LEDSetting />
-        <LCDSetting />
-        <QuickStatus />
+      </div>
+      <div className="grid grid-cols-3 bg-[#030712]">
+        <BinCard />
+        <BinCard />
+        <BinCard />
+        <BinCard />
+        <BinCard />
+        <BinCard />
         <BinCard />
       </div>
-    </div>
+    </>
   );
 }

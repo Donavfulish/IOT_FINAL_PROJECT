@@ -41,6 +41,11 @@ export const handleEspMessageFromMqtt = (topic, message) => {
     if (data === "device-malfunction") sendFaultSignal(data);
   } else {
     console.log("Not button");
+    console.log(data);
+  }
+  
+  if (device === "ultra") {
+    console.log(data);
   }
   if (!wssRef) return;
   wssRef.clients.forEach((client) => {

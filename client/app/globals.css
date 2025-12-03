@@ -40,3 +40,7 @@ body {
 .input-primary {
   @apply border border-cyan-800 rounded-xl bg-[#13161b] p-3 focus:bg-[#1c2128] transition-colors duration-200;
 }
+
+.card-secondary {
+  @apply border-1 border-gray-500 rounded-sm bg-[#1c2128] p-3;
+}

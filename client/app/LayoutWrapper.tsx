@@ -15,8 +15,6 @@ const LayoutWrapper = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <>
-      <Header accountRole="user" />
-      <DetailHeader />
       <FlowbiteInit />
       {children}
     </>

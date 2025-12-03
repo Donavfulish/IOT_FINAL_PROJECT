@@ -31,7 +31,6 @@ export default function RootLayout({
       >
         <LayoutWrapper>{children}</LayoutWrapper>
         <FlowbiteInit />
-        {children}
       </body>
     </html>
   );

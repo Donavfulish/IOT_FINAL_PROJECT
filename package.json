@@ -1,4 +1,10 @@
 {
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  },
   "dependencies": {
     "lucide-react": "^0.554.0"
   }

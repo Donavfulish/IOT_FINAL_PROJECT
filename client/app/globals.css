@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
 @import "flowbite/src/themes/default";
 @import "tailwindcss";
 
@@ -30,9 +30,13 @@ body {
 }
 
 .card-primary {
-  @apply border-1 border-gray-500 rounded-xl bg-[#13161b] p-5
+  @apply border border-gray-500 rounded-xl bg-[#13161b] p-5;
 }
 
 .card-secondary {
-  @apply border-1 border-gray-500 rounded-sm bg-[#1c2128] p-3
+  @apply border border-gray-500 rounded-sm bg-[#1c2128] p-3;
+}
+
+.input-primary {
+  @apply border border-cyan-800 rounded-xl bg-[#13161b] p-3 focus:bg-[#1c2128] transition-colors duration-200;
 }

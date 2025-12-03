@@ -1,10 +1,12 @@
 import { AlertItem } from "@/components/AlertItem/AlertItem";
 import Header from "@/components/Header";
+import LoginRedirection from "@/components/LoginRedirection";
 import React from "react";
 
 const AlertsPage = () => {
   return (
     <div>
+      <LoginRedirection />
       <Header accountRole="user" />
       <div className="p-8">
         <h1 className="text-3xl text-white font-bold mb-8">Systems alerts</h1>

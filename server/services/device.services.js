@@ -76,6 +76,7 @@ export const sendToFrontendBySocket = (payload) => {
   wssRef.clients.forEach((client) => {
     if (client.readyState === 1) {
       client.send(JSON.stringify(payload));
+      console.log("sent to wss client");
     }
   });
 };

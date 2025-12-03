@@ -52,7 +52,6 @@
 }
 
 .card-secondary {
-<<<<<<< HEAD
   @apply border border-gray-500 rounded-sm bg-[#1c2128] p-3;
 }
 
@@ -62,9 +61,6 @@
 
 .card-secondary {
   @apply border-1 border-gray-500 rounded-sm bg-[#1c2128] p-3;
-}
-=======
-  @apply border-1 border-gray-500 rounded-sm bg-[#1c2128] p-3
 }
 
 :root {
@@ -144,4 +140,3 @@
     @apply bg-background text-foreground;
   }
 }
->>>>>>> origin/feature/page/BinDetail

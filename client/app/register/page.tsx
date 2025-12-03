@@ -26,7 +26,6 @@ const RegisterPage = () => {
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    console.log({ email, password, confirmPassword, binId, binPassword });
     if (!email || !password || !confirmPassword || !binId || !binPassword) {
       alert("Vui lòng nhập đầy đủ thông tin!");
       return;

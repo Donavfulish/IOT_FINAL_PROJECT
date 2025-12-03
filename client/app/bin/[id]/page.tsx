@@ -96,7 +96,6 @@ export default function BinDetailsPage({
     try {
       const res = await useUpdateOled({ id, message });
       const data = (res as any)?.data ?? res;
-      console.log(data);
     } catch (e) {
       console.error(e);
     }

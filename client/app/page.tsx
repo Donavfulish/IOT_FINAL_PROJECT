@@ -12,7 +12,11 @@ export default function HomePage() {
   useEffect(() => {
     const ws = createSocket();
     ws.onmessage = (e) => {
-      console.log("WS mess received: ", e.data);
+      const payload = JSON.parse(e.data);
+
+      // Kiểm tra id xem tin nhắn nhận được phải của mình không
+      if (payload.id === "button-fault-signal")
+        console.log("Thùng rác hư r thằng kia");
     };
 
     return () => cleanSocket(ws);

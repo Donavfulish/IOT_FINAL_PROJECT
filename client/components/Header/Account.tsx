@@ -50,7 +50,6 @@ const Account = ({ accountRole }: { accountRole: "guest" | "user" }) => {
             <button
               onClick={() => {
                 useAuthStore.getState().logout();
-                console.log(useAuthStore.getState().user);
                 router.replace("/");
               }}
               className="w-full px-3 py-2 rounded-md hover:bg-gray-600 transition-colors duration-200 text-red-300"

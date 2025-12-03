@@ -1,7 +1,7 @@
 import mqtt from "mqtt";
-import { handleEspMessageFromMqtt } from "../services/device.services.js";
+import { handleReceivingMqttMessage } from "../controllers/device.controller.js";
 const TOPIC_SUBSCRIBE = "044153414/smartbin/device";
-const mqttClient = mqtt.connect("mqtt://broker.hivemq.com");
+const mqttClient = mqtt.connect("mqtt://test.mosquitto.org"); //mqtt://test.mosquitto.org || mqtt://broker.hivemq.com
 
 mqttClient.on("connect", () => {
   console.log("MQTT connected");
@@ -10,10 +10,15 @@ mqttClient.on("connect", () => {
   mqttClient.subscribe(`${TOPIC_SUBSCRIBE}/button`);
 });
 
-//mqttClient.on("message", handleEspMessageFromMqtt);
-
 mqttClient.on("error", (error) => {
   console.error("MQTT Error:", error);
+});
+
+mqttClient.on("message", (topic, message) => {
+  const device = topic.split("/").pop();
+  const data = message.toString();
+
+  handleReceivingMqttMessage(device, data);
 });
 
 export default mqttClient;

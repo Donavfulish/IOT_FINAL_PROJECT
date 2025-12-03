@@ -1,3 +1,5 @@
+import pool from "../config/db.js";
+
 let mqttClientRef = null;
 let wssRef = null;
 const TOPIC_PUBLISH = "044153414/smartbin/web";
@@ -43,7 +45,7 @@ export const handleEspMessageFromMqtt = (topic, message) => {
     console.log("Not button");
     console.log(data);
   }
-  
+
   if (device === "ultra") {
     console.log(data);
   }
@@ -52,6 +54,12 @@ export const handleEspMessageFromMqtt = (topic, message) => {
     if (client.readyState === WebSocket.OPEN) {
       client.send(JSON.stringify({ event: "esp_update", message: data }));
     }
+    if (!wssRef) return;
+    wssRef.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(JSON.stringify({ event: "esp_update", message: data }));
+      }
+    });
   });
 };
 
@@ -70,4 +78,34 @@ export const sendToFrontendBySocket = (payload) => {
       client.send(JSON.stringify(payload));
     }
   });
+};
+
+export const getOledMessageService = async (id) => {
+  try {
+    const sql = `
+                SELECT message 
+                FROM public.bins
+                WHERE id = $1
+                `;
+    const params = [id];
+
+    return (await pool.query(sql, params)).rows[0];
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const updateOledMessageService = async (id, message) => {
+  try {
+    const sql = `
+                UPDATE public.bins  
+                SET message = $2 
+                WHERE id = $1
+                `;
+    const params = [id, message];
+
+    return (await pool.query(sql, params)).rows[0];
+  } catch (error) {
+    console.log(error);
+  }
 };

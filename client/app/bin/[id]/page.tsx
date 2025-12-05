@@ -15,6 +15,8 @@ import TemperatureChart from "@/components/TemperatureChart";
 import { use } from "react";
 import { useGetOled, useUpdateOled } from "@/hook/useOled";
 import LoginRedirection from "@/components/LoginRedirection";
+import { useGetTempInHour } from "@/hook/useTemp";
+import { cleanSocket, createSocket } from "@/lib/socket";
 
 interface BinData {
   id: string;
@@ -25,6 +27,11 @@ interface BinData {
   humidity: number;
   lastUpdated: string;
   lastEmptied: string;
+}
+
+interface Temp {
+  time: Date;
+  temp: number;
 }
 
 export default function BinDetailsPage({
@@ -42,6 +49,28 @@ export default function BinDetailsPage({
   const [newMessage, setNewMessage] = useState<string>("no message");
   const [ledEnabled, setLedEnabled] = useState(true);
   const [isSavingMessage, setIsSavingMessage] = useState(false);
+  const [tempHour, setTempHour] = useState<Temp[]>([]);
+  const [nowTemp, setNowTemp] = useState(0);
+  // Fetch temperature in 1 hour
+  useEffect(() => {
+    let mounted = true;
+
+    const loadTempHour = async () => {
+      const data = await useGetTempInHour(id);
+      if (mounted) {
+        setTempHour(data.result ?? []);
+        setNowTemp(
+          data.result.reduce((max: Temp, item: Temp) =>
+            item.temp > max.temp ? item : max
+          ).temp
+        );
+      }
+    };
+    loadTempHour();
+    return () => {
+      mounted = false;
+    };
+  }, [id, nowTemp]);
 
   useEffect(() => {
     let mounted = true;
@@ -61,6 +90,20 @@ export default function BinDetailsPage({
       mounted = false;
     };
   }, [id]);
+
+  // Socket
+  useEffect(() => {
+    const ws = createSocket();
+    ws.onmessage = (e) => {
+      console.log("e", e);
+      const payload = JSON.parse(e.data);
+      if (payload.id === "temp") {
+        setNowTemp(payload.temp);
+      }
+    };
+
+    return () => cleanSocket(ws);
+  }, []);
 
   useEffect(() => {
     if (lcdMessageData !== null && lcdMessageData !== undefined) {
@@ -130,7 +173,7 @@ export default function BinDetailsPage({
         return "";
     }
   };
-
+  console.log(tempHour);
   return (
     <>
       <LoginRedirection />
@@ -175,7 +218,9 @@ export default function BinDetailsPage({
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left Column - Charts */}
             <div className="lg:col-span-2 space-y-6">
-              <TemperatureChart />
+              <div className="w-full h-[320px]">
+                <TemperatureChart tempHour={tempHour} />
+              </div>
 
               {/* Event Log */}
               <Card className="border-border/50 bg-card/50">
@@ -251,7 +296,7 @@ export default function BinDetailsPage({
                       Current Temperature
                     </p>
                     <p className="text-sm font-semibold text-foreground">
-                      {binData.temperature}°C
+                      {nowTemp}°C
                     </p>
                   </div>
 

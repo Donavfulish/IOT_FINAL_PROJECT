@@ -9,7 +9,7 @@ const AlertsPage = () => {
       <LoginRedirection />
       <Header accountRole="user" />
       <div className="p-8">
-        <h1 className="text-3xl text-white font-bold mb-8">Systems alerts</h1>
+        <h1 className="text-3xl text-white font-bold mb-8">System Alerts</h1>
         <div className="grid gap-y-4">
           <AlertItem />
           <AlertItem />

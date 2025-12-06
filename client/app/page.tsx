@@ -5,7 +5,7 @@ import SearchBar from "@/components/SearchBar/SearchBar";
 import Header from "@/components/Header";
 import LoginRedirection from "@/components/LoginRedirection";
 import { useEffect } from "react";
-import { cleanSocket, createSocket } from "@/lib/socket";
+import { createSocket, cleanSocket } from "@/lib/socket";
 
 // Đây là trang dashboard
 export default function HomePage() {
@@ -29,7 +29,7 @@ export default function HomePage() {
       <div className="p-8 bg-[#030712]">
         <SearchBar />
       </div>
-      <div className="grid grid-cols-3 bg-[#030712]">
+      <div className="grid grid-cols-3">
         <BinCard />
         <BinCard />
         <BinCard />

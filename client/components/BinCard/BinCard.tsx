@@ -2,7 +2,7 @@ import React from "react";
 
 interface BinData {
   binId: number;
-  status: 'OPERATIONAL' | 'WARNING' | 'FULL' | 'MAINTENANCE';
+  status: "OPERATIONAL" | "WARNING" | "FULL" | "MAINTENANCE";
   fillLevel: number;
   battery: number;
   temperature: number;
@@ -12,7 +12,7 @@ const BinCard: React.FC = () => {
   // Mock data cho thùng rác
   const binData: BinData = {
     binId: 1,
-    status: 'OPERATIONAL',
+    status: "OPERATIONAL",
     fillLevel: 45,
     battery: 85,
     temperature: 28,
@@ -41,7 +41,7 @@ const BinCard: React.FC = () => {
 
   return (
     <div className="w-full h-full bg-gray-950 p-6 flex items-center justify-center">
-      <div className="w-full max-w-2xl bg-gray-900 rounded-3xl p-8 shadow-2xl border border-gray-800">
+      <div className="w-full max-w-2xl bg-gray-900 rounded-3xl p-8 shadow-2xl border border-gray-800 hover:border-blue-500 transition-colors duration-200">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-3xl font-bold text-white tracking-wide">

@@ -5,8 +5,8 @@ import Account from "./Account";
 const Header = ({ accountRole }: { accountRole: "guest" | "user" }) => {
   return (
     <nav className="flex flex-row justify-between items-baseline bg-gray-800 border-b-gray-500 pt-5 pb-4 px-10">
-      <Link href="/" className="font-bold text-xl text-white">
-        SmartBin
+      <Link href="/" className="font-bold text-2xl text-white">
+        <span className="text-cyan-500">Smart</span>Bin
       </Link>
       <div className="flex flex-row gap-5 font-medium text-md text-white items-center">
         <Link

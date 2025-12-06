@@ -23,12 +23,16 @@ const data = [
 
 export default function TemperatureChart() {
   return (
-    <div className="w-full h-80 rounded-2xl pb-16 px-8 pt-8 bg-[#0f172a] border border-amber-300">
-      <h2 className="text-white text-lg mb-6 font-semibold">
+    <div className="w-full h-90 rounded-2xl pb-18 px-8 pt-8 bg-[#0f172a] border border-cyan-500 select-none">
+      <h2 className="text-white text-xl mb-7 font-semibold">
         Temperature Trend
       </h2>
 
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer
+        width="100%"
+        height="100%"
+        className="-translate-x-5"
+      >
         <AreaChart data={data}>
           <defs>
             <linearGradient id="tempColor" x1="0" y1="0" x2="0" y2="1">

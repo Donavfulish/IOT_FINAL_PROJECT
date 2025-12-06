@@ -1,24 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  MessageSquare,
-  ArrowLeft,
-  Lightbulb,
-  Thermometer,
-  Droplets,
-} from "lucide-react";
+import { MessageSquare } from "lucide-react";
 import TemperatureChart from "@/components/TemperatureChart";
 import { use } from "react";
-import { useGetOled, useUpdateOled } from "@/hook/useOled";
+import { useGetOled, useUpdateOled } from "@/hook/oledHook";
 import LoginRedirection from "@/components/LoginRedirection";
 import DetailHeader from "@/components/DetailHeader";
 import QuickStatus from "@/components/QuickStatus/QuickStatus";
 import LEDSetting from "@/components/LEDSetting";
 import LCDSetting from "@/components/LCDSetting";
+import { cleanSocket, createSocket } from "@/lib/socket";
+import { useBinDetailById } from "../../../hook/detailHook";
 
 interface BinData {
   id: string;
@@ -46,6 +41,9 @@ export default function BinDetailsPage({
   const [newMessage, setNewMessage] = useState<string>("no message");
   const [ledEnabled, setLedEnabled] = useState(true);
   const [isSavingMessage, setIsSavingMessage] = useState(false);
+
+  let binDetail = useBinDetailById(1);
+  console.log(binDetail);
 
   useEffect(() => {
     let mounted = true;
@@ -94,6 +92,16 @@ export default function BinDetailsPage({
       const auth = JSON.parse(authData);
       setIsAuthenticated(auth.isAuthenticated && !auth.isGuest);
     }
+
+    const ws = createSocket();
+    ws.onmessage = (e) => {
+      const payload = JSON.parse(e.data);
+
+      if (payload.id === "button-fault-signal")
+        console.log("Thùng rác hư r thằng kia");
+    };
+
+    return () => cleanSocket(ws);
   }, []);
 
   async function updateOled(message: string) {

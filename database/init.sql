@@ -5,8 +5,8 @@ CREATE TABLE users(
 );
 CREATE TABLE bins(
 	id SERIAL PRIMARY KEY,
-	battery DECIMAL(4,4),
-	fill_level DECIMAL(4,4),
+	battery DECIMAL(5,3),
+	fill_level DECIMAL(5,3),
 	is_display_fill BOOLEAN,
 	message TEXT,
 	led_mode VARCHAR(10) NOT NULL 
@@ -35,8 +35,8 @@ CREATE TABLE alerts(
 	time_at TIMESTAMP
 );
 CREATE TABLE config_system_alerts(
-	fill_level DECIMAL(4,4), 
-	battery DECIMAL(4,4), 
+	fill_level DECIMAL(5,3), 
+	battery DECIMAL(5,3), 
 	temperature DECIMAL(5,2)
 );
 
@@ -51,11 +51,11 @@ INSERT INTO users (email, password) VALUES
 ('user5@example.com', 'testpass');
 
 INSERT INTO bins (battery, fill_level, is_display_fill, message, led_mode, time_on_led, time_off_led) VALUES
-(0.9500, 0.2000, TRUE,  'Hoạt động bình thường', 'auto',   '06:00', '18:00'),
-(0.8700, 0.7500, TRUE,  'Gần đầy',               'manual', NULL, NULL ),
-(0.6000, 0.1000, FALSE, 'Tiết kiệm pin',         'auto',   '08:00', '20:00'),
-(0.4500, 0.9000, TRUE,  'Cảnh báo đầy',          'auto',   '07:00', '19:00'),
-(0.3000, 0.5000, FALSE, 'Pin yếu',               'manual', NULL,    NULL);
+(0.950, 0.200, TRUE,  'Hoạt động bình thường', 'auto',   '06:00', '18:00'),
+(0.870, 0.750, TRUE,  'Gần đầy',               'manual', NULL, NULL ),
+(0.600, 0.100, FALSE, 'Tiết kiệm pin',         'auto',   '08:00', '20:00'),
+(0.400, 0.900, TRUE,  'Cảnh báo đầy',          'auto',   '07:00', '19:00'),
+(0.300, 0.500, FALSE, 'Pin yếu',               'manual', NULL,    NULL);
 
 INSERT INTO bin_histories (bin_id, temperature, time_at) VALUES
 (1, 35.20, NOW() - INTERVAL '58 minutes'),
@@ -97,4 +97,4 @@ INSERT INTO alerts (bin_id, title, message, time_at) VALUES
 (5, 'Hoạt động trở lại',  'Cảm biến đã ổn định',   NOW() - INTERVAL '5 days');
 
 INSERT INTO config_system_alerts (fill_level, battery, temperature) VALUES
-(0.8000, 0.3000, 40.00);
+(0.800, 0.300, 40.00);

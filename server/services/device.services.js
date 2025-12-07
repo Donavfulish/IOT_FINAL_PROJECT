@@ -13,7 +13,12 @@ export const sendTemp = (temp) => {
     temp: temp,
   });
 };
-
+export const sendFillLevel = (level) => {
+  sendToFrontendBySocket({
+    id: "fill_level",
+    level: level,
+  });
+};
 export const getOledMessageService = async (id) => {
   try {
     const sql = `
@@ -101,6 +106,19 @@ export const updateFillLevelService = async (id, nowLevel) => {
     console.log(error);
   }
 };
+export const getEventLogService = async (id) => {
+  try {
+    const sql = `
+                  SELECT e.message, e.time_at FROM public.event_logs as e WHERE e.bin_id = $1
+                   `;
+    const params = [id];
+    const result = await pool.query(sql, params);
+    return result.rows;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const createEventLogService = async (id, message) => {
   try {
     console.log(message);
@@ -115,14 +133,27 @@ export const createEventLogService = async (id, message) => {
     console.log(error);
   }
 };
-export const createSystemAlertService = async (id, title, message) => {
+
+export const getSystemAlertService = async (id) => {
+  try {
+    const sql = `
+                  SELECT a.title, a.message, a.time_at, a.type FROM public.alerts as a WHERE a.bin_id = $1
+                   `;
+    const params = [id];
+    const result = await pool.query(sql, params);
+    return result.rows;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const createSystemAlertService = async (id, title, message, type) => {
   try {
     console.log(message);
     const sql = `
-                  INSERT INTO public.alerts (bin_id,title, message, time_at)
-                  VALUES($1 ,$2 ,$3, NOW())
+                  INSERT INTO public.alerts (bin_id,title, message, time_at, type)
+                  VALUES($1 ,$2 ,$3, NOW(), $4)
                   `;
-    const params = [id, title, message];
+    const params = [id, title, message, type];
     const result = await pool.query(sql, params);
     return result.rows[0];
   } catch (error) {

@@ -39,7 +39,7 @@ export default function BinDetailsPage() {
 
     const loadTempHour = async () => {
       try {
-        const data = await useGetTempInHour(parseInt(id));
+        const data = await useGetTempInHour(parseInt(String(id)));
         if (mounted) {
           setTempHour(data.result ?? []);
           setNowTemp(
@@ -106,7 +106,7 @@ export default function BinDetailsPage() {
 
     // 1. Update OLED Message
     await useUpdateOled({
-      id: id,
+      id: String(id),
       message: message,
     });
 

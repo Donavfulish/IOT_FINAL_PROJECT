@@ -12,13 +12,14 @@ import {
   sendFillLevel,
   getEventLogService,
   getSystemAlertService,
+  warningHighTemperature,
 } from "../services/device.services.js";
 import { sendMail } from "../services/email.services.js";
 
-export const handleReceivingMqttMessage = (device, data) => {
+export const handleReceivingMqttMessage = async (device, data) => {
   const binId = 1;
   if (device === "button") {
-    if (data === "device-malfunction") sendFaultSignal();
+    if (data === "device-malfunction") await sendFaultSignal(binId);
   }
   if (device === "ultra") {
     console.log("ultra:", data);
@@ -38,6 +39,7 @@ export const handleReceivingMqttMessage = (device, data) => {
   if (device === "temp") {
     createTempHistoryService(binId, data);
     sendTemp(data);
+    if (data > 50) await warningHighTemperature(binId, data);
   }
 };
 

@@ -6,6 +6,8 @@ import Header from "@/components/Header";
 import LoginRedirection from "@/components/LoginRedirection";
 import { useEffect } from "react";
 import { createSocket, cleanSocket } from "@/lib/socket";
+import { useSendNotification } from "@/hook/notificationHook";
+import { useAuthStore } from "@/store/auth.store";
 
 // Đây là trang dashboard
 export default function HomePage() {
@@ -22,8 +24,19 @@ export default function HomePage() {
     return () => cleanSocket(ws);
   }, []);
 
+  const user = useAuthStore((state) => state.user) || undefined;
+
   return (
     <>
+      {user && (
+        <button
+          onClick={() => useSendNotification(user.id, "Title", "Body", {})}
+          className="w-100 h-100 border border-gray-200 bg-blue-200/80"
+        >
+          Click here to get pushed notification
+        </button>
+      )}
+
       <LoginRedirection />
       <Header accountRole="user" />
       <div className="p-8 bg-[#030712]">

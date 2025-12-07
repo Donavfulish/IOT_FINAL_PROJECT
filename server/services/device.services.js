@@ -22,7 +22,6 @@ export const getOledMessageService = async (id) => {
                 WHERE id = $1
                 `;
     const params = [id];
-
     return (await pool.query(sql, params)).rows[0];
   } catch (error) {
     console.log(error);

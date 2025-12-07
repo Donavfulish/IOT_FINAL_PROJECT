@@ -36,23 +36,13 @@ const StatItem: React.FC<StatItemProps> = ({
   );
 };
 
-const QuickStatus: React.FC = () => {
-  // Mock data
-  const stats = {
-    battery: {
-      percentage: 85,
-      color: "#10b981",
-    },
-    temperature: {
-      value: 28,
-      unit: "°C",
-    },
-    fillLevel: {
-      percentage: 45,
-      color: "#06b6d4",
-    },
-  };
+interface QuickStatusProps {
+  battery: number;
+  fillLevel: number;
+  // temperature: number; // Uncomment nếu API có trả về nhiệt độ
+}
 
+const QuickStatus: React.FC<QuickStatusProps> = ({ battery, fillLevel }) => {
   return (
     <div className="bg-gray-950 flex items-center justify-center">
       <div className="w-full bg-gray-900 rounded-3xl p-8 shadow-2xl card-primary px-5!">
@@ -61,25 +51,26 @@ const QuickStatus: React.FC = () => {
         <StatItem
           icon={<Battery className="w-5 h-5" />}
           label="Battery Level"
-          value={`${stats.battery.percentage}%`}
-          percentage={stats.battery.percentage}
-          color={stats.battery.color}
+          value={`${battery}%`}
+          percentage={battery}
+          color={battery < 20 ? "#ef4444" : "#10b981"}
         />
 
-        <StatItem
+        {/* Placeholder cho Temperature nếu sau này API có */}
+        {/* <StatItem
           icon={<Thermometer className="w-5 h-5" />}
           label="Current Temperature"
-          value={`${stats.temperature.value}${stats.temperature.unit}`}
+          value={`-- °C`}
           percentage={0}
           color="transparent"
-        />
+        /> */}
 
         <StatItem
           icon={<Droplet className="w-5 h-5" />}
           label="Fill Level"
-          value={`${stats.fillLevel.percentage}%`}
-          percentage={stats.fillLevel.percentage}
-          color={stats.fillLevel.color}
+          value={`${fillLevel}%`}
+          percentage={fillLevel}
+          color={fillLevel > 80 ? "#ef4444" : "#06b6d4"}
         />
       </div>
     </div>

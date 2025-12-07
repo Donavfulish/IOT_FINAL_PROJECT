@@ -20,7 +20,7 @@ export type BinDetailType = {
 
 export const useBinDetailById = async (
   id: number
-): Promise<AlertType | undefined> => {
+): Promise<BinDetailType | undefined> => {
   if (!id) return undefined;
 
   try {

@@ -129,3 +129,22 @@ export const createSystemAlertService = async (id, title, message) => {
     console.log(error);
   }
 };
+
+
+export const updateLedConfigService = async (id, led_mode, time_on_led, time_off_led) => {
+  try {
+    const sql = `
+        UPDATE public.bins  
+        SET led_mode = $2,
+            time_on_led = $3,
+            time_off_led = $4
+        WHERE id = $1
+        RETURNING *
+    `;
+    const params = [id, led_mode, time_on_led, time_off_led];
+    return (await pool.query(sql, params)).rows[0];
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};

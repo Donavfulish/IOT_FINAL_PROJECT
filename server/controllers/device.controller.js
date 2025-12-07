@@ -3,6 +3,7 @@ import {
   sendFaultSignal,
   getOledMessageService,
   updateOledMessageService,
+  updateLedConfigService
 } from "../services/device.services.js";
 
 export const handleReceivingMqttMessage = (device, data) => {
@@ -69,6 +70,33 @@ export const updateOledMessage = async (req, res) => {
       espResult,
     });
   } catch (e) {
+    res.status(500).json({ ok: false, message: e.message });
+  }
+};
+
+
+export const updateLedConfig = async (req, res) => {
+  try {
+    const { id, led_mode, time_on_led, time_off_led } = req.body;
+
+    const updateResult = await updateLedConfigService(id, led_mode, time_on_led, time_off_led);
+
+    const mqttPayload = {
+        mode: led_mode,   
+        start: time_on_led, 
+        end: time_off_led   
+    };
+
+    const espResult = sendCommandToDevice("led", mqttPayload);
+
+    res.json({
+      ok: true,
+      message: "Update LED config success",
+      updateResult,
+      espResult,
+    });
+  } catch (e) {
+    console.error(e);
     res.status(500).json({ ok: false, message: e.message });
   }
 };

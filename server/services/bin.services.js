@@ -17,6 +17,7 @@ const getBinDetailById = async (id) => {
   const promises = [pool.query(detailSql, [id]), pool.query(alertsSql, [id])];
   const [detailResult, alertsResult] = await Promise.all(promises);
 
+
   const [detail, alerts] = [
     detailResult.rows?.[0] || null,
     alertsResult.rows || [],

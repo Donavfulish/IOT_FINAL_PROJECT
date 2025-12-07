@@ -25,7 +25,7 @@ export const useLogin = async (
   if (!payload) return undefined;
 
   try {
-    const res = await api.post("/api/user/login", payload);
+    const res = await api.post("/user/login", payload);
     useAuthStore.getState().setUser(res.data);
     return res.data;
   } catch (e) {
@@ -48,7 +48,7 @@ export const useRegister = async (
     };
 
   try {
-    const res = await api.post("/api/user/register", payload);
+    const res = await api.post("/user/register", payload);
     const { success } = res.data;
     if (!success) return res.data;
     return res.data;

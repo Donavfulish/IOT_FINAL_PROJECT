@@ -3,7 +3,7 @@ import { useAuthStore } from "@/store/auth.store";
 
 export const useSaveFCMToken = async (userId: number, fcmToken: string) => {
   try {
-    await api.post("/api/firebase/save-fcm-token", { userId, fcmToken });
+    await api.post("/firebase/save-fcm-token", { userId, fcmToken });
   } catch (e) {
     console.error("Login failed: ", e);
   }
@@ -16,7 +16,7 @@ export const useSendNotification = async (
   data: object
 ) => {
   try {
-    await api.post("/api/firebase/send-notification", {
+    await api.post("/firebase/send-notification", {
       userId,
       title,
       body,

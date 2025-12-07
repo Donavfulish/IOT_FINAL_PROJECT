@@ -14,33 +14,23 @@ import LCDSetting from "@/components/LCDSetting";
 // Hooks & Types
 import { useBinDetailById, BinDetailType } from "@/hook/detailHook";
 import { useUpdateOled } from "@/hook/oledHook";
+import { useParams } from "next/navigation";
 
 interface Temp {
   time: Date;
   temp: number;
 }
 
-export default function BinDetailsPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = use(params);
+export default function BinDetailsPage() {
+  const { id } = useParams();
 
-<<<<<<< HEAD
   // State
   const [binDetail, setBinDetail] = useState<BinDetailType | undefined>(
     undefined
   );
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-=======
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
-  const [lcdMode, setLcdMode] = useState<"fillLevel" | "message">("message");
-  const [lcdMessage, setLcdMessage] = useState<string>("no message");
-  const [newMessage, setNewMessage] = useState<string>("no message");
-  const [ledEnabled, setLedEnabled] = useState(true);
-  const [isSavingMessage, setIsSavingMessage] = useState(false);
+
   const [tempHour, setTempHour] = useState<Temp[]>([]);
   const [nowTemp, setNowTemp] = useState(0);
   // Fetch temperature in 1 hour
@@ -68,25 +58,6 @@ export default function BinDetailsPage({
     };
   }, [id, nowTemp]);
 
-  useEffect(() => {
-    let mounted = true;
-    async function fetchOled() {
-      try {
-        const res = await useGetOled(id);
-        const data = (res as any)?.data ?? res;
-        if (mounted) {
-          setLcdMessageData(data.result.message ?? "no message");
-        }
-      } catch (e) {
-        if (mounted) setLcdMessageData("no message");
-      }
-    }
-    fetchOled();
-    return () => {
-      mounted = false;
-    };
-  }, [id]);
-
   // Socket
   useEffect(() => {
     const ws = createSocket();
@@ -100,29 +71,6 @@ export default function BinDetailsPage({
 
     return () => cleanSocket(ws);
   }, []);
-
-  useEffect(() => {
-    if (lcdMessageData !== null && lcdMessageData !== undefined) {
-      setLcdMessage(String(lcdMessageData));
-      setNewMessage(String(lcdMessageData));
-    }
-  }, [lcdMessageData]);
-  const [ledSchedule, setLedSchedule] = useState("manual");
-  const [ledStartTime, setLedStartTime] = useState("18:00");
-  const [ledEndTime, setLedEndTime] = useState("06:00");
-
-  // Mock bin data
-  const binData: BinData = {
-    id: binId,
-    status: "operational",
-    fillLevel: 45,
-    battery: 85,
-    temperature: 28,
-    humidity: 65,
-    lastUpdated: "2025-11-03 09:12:00Z",
-    lastEmptied: "2025-10-25 14:30:00Z",
-  };
->>>>>>> origin/feature/redirect/luan
 
   // Check auth
   useEffect(() => {
@@ -194,7 +142,6 @@ export default function BinDetailsPage({
     );
   }
 
-<<<<<<< HEAD
   if (!binDetail) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -202,39 +149,6 @@ export default function BinDetailsPage({
       </div>
     );
   }
-
-=======
-  const handleSaveMessage = async () => {
-    setIsSavingMessage(true);
-
-    try {
-      await updateOled(newMessage);
-
-      setLcdMessage(newMessage);
-      setLcdMode("message");
-
-      alert("Saved! LCD message updated successfully.");
-    } catch (e) {
-      alert("Failed to save. Please try again.");
-    } finally {
-      setIsSavingMessage(false);
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "operational":
-        return "bg-green-500/20 text-green-400 border border-green-500/30";
-      case "warning":
-        return "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30";
-      case "critical":
-        return "bg-red-500/20 text-red-400 border border-red-500/30";
-      default:
-        return "";
-    }
-  };
-  console.log(tempHour);
->>>>>>> origin/feature/redirect/luan
   return (
     <>
       <LoginRedirection />
@@ -299,9 +213,9 @@ export default function BinDetailsPage({
               <QuickStatus
                 battery={binDetail.battery}
                 fillLevel={binDetail.fill_level}
+                temperature={nowTemp}
               />
 
-<<<<<<< HEAD
               {/* API-connected LCD Setting */}
               <LCDSetting
                 isDisplayFill={binDetail.is_display_fill}
@@ -309,38 +223,6 @@ export default function BinDetailsPage({
                 fillLevel={binDetail.fill_level}
                 onSave={handleSaveLCD}
               />
-=======
-              <div className="pt-4 border-t border-border/30">
-                <p className="text-xs text-muted-foreground mb-2 flex items-center gap-2">
-                  <Thermometer size={14} />
-                  Current Temperature
-                </p>
-                <p className="text-sm font-semibold text-foreground">
-                  {nowTemp}°C
-                </p>
-              </div>
-
-              <div className="pt-4 border-t border-border/30">
-                <p className="text-xs text-muted-foreground mb-2 flex items-center gap-2">
-                  <Droplets size={14} />
-                  Fill Level
-                </p>
-                <div className="w-full bg-secondary rounded-full h-2">
-                  <div
-                    className="h-full rounded-full bg-primary"
-                    style={{ width: `${binData.fillLevel}%` }}
-                  ></div>
-                </div>
-                <p className="text-sm font-semibold text-foreground mt-1">
-                  {binData.fillLevel}%
-                </p>
-              </div>
-
-              <CardContent />
-              <Card />
-              {/* Au's LCD Setting */}
-              <LCDSetting />
->>>>>>> origin/feature/redirect/luan
 
               <LEDSetting
                 mode={binDetail.led_mode}

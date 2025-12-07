@@ -8,8 +8,7 @@ import DetailHeader from "@/components/DetailHeader";
 import QuickStatus from "@/components/QuickStatus/QuickStatus";
 import LEDSetting from "@/components/LEDSetting";
 import LCDSetting from "@/components/LCDSetting";
-
-// Hooks & Types
+import { useUpdateLed } from "@/hook/ledHook";
 import { useBinDetailById, BinDetailType } from "@/hook/detailHook";
 import { useUpdateOled } from "@/hook/oledHook";
 
@@ -19,7 +18,6 @@ export default function BinDetailsPage({
     params: Promise<{ id: string }>;
 }) {
     const { id } = use(params);
-
     // State
     const [binDetail, setBinDetail] = useState<BinDetailType | undefined>(undefined);
     const [loading, setLoading] = useState(true);
@@ -27,7 +25,8 @@ export default function BinDetailsPage({
 
     // Check auth
     useEffect(() => {
-        const authData = localStorage.getItem("auth");
+        const authData = localStorage.getItem("auth-storage");
+        console.log(authData);
         if (authData) {
             const auth = JSON.parse(authData);
             setIsAuthenticated(auth.isAuthenticated && !auth.isGuest);
@@ -56,7 +55,6 @@ export default function BinDetailsPage({
     // Handlers for updating settings
     const handleSaveLCD = async (message: string, isDisplayFill: boolean) => {
         if (!binDetail) return;
-
         // 1. Update OLED Message
         await useUpdateOled({
             id: id,
@@ -73,14 +71,19 @@ export default function BinDetailsPage({
     const handleSaveLED = async (mode: "auto" | "manual", start: string, end: string) => {
         if (!binDetail) return;
 
-        // TODO: Hiện tại chưa có API hook update LED cụ thể 
-        //  cần implement: await useUpdateLed({ id, mode, start, end });
+        try {
+            await useUpdateLed({
+                id: id, 
+                led_mode: mode,
+                time_on_led: start,
+                time_off_led: end
+            });
 
-        console.log("Saving LED config:", { mode, start, end });
-        alert("API Update LED chưa được implement. Vui lòng kiểm tra lại hook.");
-
-        // Refresh data sau khi update
-        await fetchBinDetail();
+            await fetchBinDetail();
+        } catch (error) {
+            console.error("Failed to update LED config", error);
+            alert("Failed to update LED config");
+        }
     };
 
     if (loading) {
@@ -125,7 +128,7 @@ export default function BinDetailsPage({
                                             binDetail.alerts.map((alert, index) => (
                                                 <div key={index} className="flex gap-3 pb-3 border-b border-border/30 last:border-0">
                                                     <div className={`w-2 h-2 rounded-full mt-2 shrink-0 ${alert.title.toLowerCase().includes("warning") ? "bg-yellow-500" :
-                                                            alert.title.toLowerCase().includes("critical") ? "bg-red-500" : "bg-green-500"
+                                                        alert.title.toLowerCase().includes("critical") ? "bg-red-500" : "bg-green-500"
                                                         }`}></div>
                                                     <div>
                                                         <p className="text-sm font-medium text-foreground">
@@ -167,15 +170,6 @@ export default function BinDetailsPage({
                                 endTime={binDetail.time_off_led}
                                 onSave={handleSaveLED}
                             />
-                            {/* API-connected LED Setting */}
-                            {/* {isAuthenticated && (
-                                <LEDSetting
-                                    mode={binDetail.led_mode}
-                                    startTime={binDetail.time_on_led}
-                                    endTime={binDetail.time_off_led}
-                                    onSave={handleSaveLED}
-                                />
-                            )} */}
                         </div>
                     </div>
                 </main>

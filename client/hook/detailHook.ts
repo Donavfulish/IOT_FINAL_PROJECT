@@ -22,7 +22,6 @@ export const useBinDetailById = async (
   id: number
 ): Promise<BinDetailType | undefined> => {
   if (!id) return undefined;
-
   try {
     const res = await api.get(`/api/bin/${id}`);
     return res.data;

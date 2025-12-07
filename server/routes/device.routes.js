@@ -5,6 +5,8 @@ import {
   getOledMessage,
   updateOledMessage,
   getTempInOneHour,
+  getEventLogs,
+  getSystemAlerts,
 } from "../controllers/device.controller.js";
 
 const router = Router();
@@ -13,6 +15,8 @@ router.get("/open-led", openLed);
 router.get("/message-to-oled", messageToOled);
 router.get("/oled/:id", getOledMessage);
 router.get("/temp/:id/hour", getTempInOneHour);
+router.get("/event-log/:id", getEventLogs);
+router.get("/system-alert/:id", getSystemAlerts);
 router.patch("/oled", updateOledMessage);
 
 export default router;

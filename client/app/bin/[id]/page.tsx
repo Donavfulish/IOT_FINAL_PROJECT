@@ -60,14 +60,18 @@ export default function BinDetailsPage({
     let mounted = true;
 
     const loadTempHour = async () => {
-      const data = await useGetTempInHour(id);
-      if (mounted) {
-        setTempHour(data.result ?? []);
-        setNowTemp(
-          data.result.reduce((max: Temp, item: Temp) =>
-            item.temp > max.temp ? item : max
-          ).temp
-        );
+      try {
+        const data = await useGetTempInHour(parseInt(id));
+        if (mounted) {
+          setTempHour(data.result ?? []);
+          setNowTemp(
+            data.result.reduce((max: Temp, item: Temp) =>
+              item.temp > max.temp ? item : max
+            ).temp
+          );
+        }
+      } catch (error) {
+        console.log(error);
       }
     };
     loadTempHour();

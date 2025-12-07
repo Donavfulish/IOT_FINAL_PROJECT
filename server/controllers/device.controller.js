@@ -10,6 +10,8 @@ import {
   createEventLogService,
   createSystemAlertService,
   sendFillLevel,
+  getEventLogService,
+  getSystemAlertService,
 } from "../services/device.services.js";
 import { sendMail } from "../services/email.services.js";
 
@@ -26,7 +28,8 @@ export const handleReceivingMqttMessage = (device, data) => {
       createSystemAlertService(
         binId,
         `BIN-${binId}: Fill level is full`,
-        "Fill Level: 100% - Critical Threshold Exceeded"
+        "Fill Level: 100% - Critical Threshold Exceeded",
+        "warning"
       );
       sendMail("Smart Bin", "Thùng rác đầy rồi", "nmluan23@clc.fitus.edu.vn");
       sendFillLevel(data);
@@ -103,6 +106,34 @@ export const getTempInOneHour = async (req, res) => {
     res.json({
       ok: true,
       message: "get temperature sucess",
+      result,
+    });
+  } catch (e) {
+    res.status(500).json({ ok: false, message: e.message });
+  }
+};
+export const getEventLogs = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await getEventLogService(id);
+
+    res.json({
+      ok: true,
+      message: "get event logs sucess",
+      result,
+    });
+  } catch (e) {
+    res.status(500).json({ ok: false, message: e.message });
+  }
+};
+
+export const getSystemAlerts = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await getSystemAlertService(id);
+    res.json({
+      ok: true,
+      message: "get system alerts sucess",
       result,
     });
   } catch (e) {

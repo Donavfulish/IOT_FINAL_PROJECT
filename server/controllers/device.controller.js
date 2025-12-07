@@ -9,7 +9,9 @@ import {
   updateFillLevelService,
   createEventLogService,
   createSystemAlertService,
+  sendFillLevel,
 } from "../services/device.services.js";
+import { sendMail } from "../services/email.services.js";
 
 export const handleReceivingMqttMessage = (device, data) => {
   const binId = 1;
@@ -26,6 +28,8 @@ export const handleReceivingMqttMessage = (device, data) => {
         `BIN-${binId}: Fill level is full`,
         "Fill Level: 100% - Critical Threshold Exceeded"
       );
+      sendMail("Smart Bin", "Thùng rác đầy rồi", "nmluan23@clc.fitus.edu.vn");
+      sendFillLevel(data);
     }
   }
   if (device === "temp") {

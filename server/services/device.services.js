@@ -13,7 +13,12 @@ export const sendTemp = (temp) => {
     temp: temp,
   });
 };
-
+export const sendFillLevel = (level) => {
+  sendToFrontendBySocket({
+    id: "fill_level",
+    level: level,
+  });
+};
 export const getOledMessageService = async (id) => {
   try {
     const sql = `

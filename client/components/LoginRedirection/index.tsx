@@ -11,8 +11,8 @@ const LoginRedirection = () => {
   useEffect(() => {
     if (user === undefined) return;
     if (user === null) router.replace("/login");
-    if (pathName === "/alerts" && user?.role === "guest")
-      router.replace("/login");
+    // if (pathName === "/alerts" && user?.role === "guest")
+    // router.replace("/login");
   }, [user, router]);
 
   return <></>;

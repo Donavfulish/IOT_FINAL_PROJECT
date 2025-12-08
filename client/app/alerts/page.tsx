@@ -6,6 +6,8 @@ import { useGetSystemAlerts } from "@/hook/useNotification";
 import React from "react";
 import { useEffect, useState } from "react";
 import { cleanSocket, createSocket } from "@/lib/socket";
+import LoadingSpinner from "@/components/LoadingSpinner/LoadingSpinner";
+import { useAuthStore } from "@/store/auth.store";
 
 interface Alert {
   title: string;
@@ -14,14 +16,24 @@ interface Alert {
   type: string;
 }
 const AlertsPage = () => {
-  const bin_id = 1;
+  const user = useAuthStore((store) => store.user);
   const [systemAlerts, setSystemAlerts] = useState<Alert[]>([]);
+
+  if (!user) return <LoadingSpinner />;
+  if (user.role == "guest") {
+    return (
+      <div className="flex w-screen h-screen justify-center items-center">
+        <p>You don't have the permission to access this page</p>
+      </div>
+    );
+  }
 
   useEffect(() => {
     let mounted = true;
     async function fetchSystemAlerts() {
+      if (!user) return;
       try {
-        const data = await useGetSystemAlerts(bin_id);
+        const data = await useGetSystemAlerts(user.bin_id);
 
         if (mounted) {
           setSystemAlerts(data.result);
@@ -31,17 +43,10 @@ const AlertsPage = () => {
       }
     }
     fetchSystemAlerts();
-    const ws = createSocket();
-    ws.onmessage = (e) => {
-      const payload = JSON.parse(e.data);
-      if (payload.id === "fill_level") {
-        fetchSystemAlerts();
-      }
-    };
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [user]);
 
   return (
     <div>
@@ -50,6 +55,7 @@ const AlertsPage = () => {
       <div className="p-8">
         <h1 className="text-3xl text-white font-bold mb-8">System Alerts</h1>
         <div className="grid gap-y-4">
+          {systemAlerts.length == 0 && <LoadingSpinner />}
           {systemAlerts &&
             systemAlerts.map((s, index) => <AlertItem key={index} alert={s} />)}
         </div>

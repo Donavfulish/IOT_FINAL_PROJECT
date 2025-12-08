@@ -1,22 +1,21 @@
 import pool from "../config/db.js";
-import { sendNotification } from "../controllers/firebase.controller.js";
-import { sendToFrontendBySocket } from "./protocol.services.js";
+import protocolServices from "./protocol.services.js";
 import firebaseServices from "./firebase.services.js";
 import admin from "firebase-admin";
 
-export const sendFaultSignal = async (binId) => {
+const sendFaultSignal = async (binId) => {
   if (!binId) return;
 
-  sendToFrontendBySocket({
+  protocolServices.protocolServices.sendToFrontendBySocket({
     id: "button-fault-signal",
   });
 
   const logAndAlertPromises = [
-    createEventLogService(binId, `Báo cáo thùng rác có hư hỏng!`),
+    createEventLogService(binId, `Device malfunction or unwanted working`),
     createSystemAlertService(
       binId,
-      "Báo cáo hư hỏng!",
-      "Thùng rác bị phản ánh hư hỏng thiết bị hoặc không hoạt động đúng cách",
+      "Device malfunction",
+      "The bin may working unwantedly or under malfuncition",
       "warning"
     ),
   ];
@@ -24,18 +23,18 @@ export const sendFaultSignal = async (binId) => {
   await Promise.all(logAndAlertPromises);
 };
 
-export const sendTemp = (temp) => {
-  sendToFrontendBySocket({
+const sendTemp = (temp) => {
+  protocolServices.sendToFrontendBySocket({
     id: "temp",
     temp: temp,
   });
 };
 
-export const warningHighTemperature = async (binId, temp) => {
+const warningHighTemperature = async (binId, temp) => {
   const nearestTempAlertSql = `
     SELECT time_at
     FROM ALERTS
-    WHERE bin_id = $1 AND title = 'Nhiệt độ cao, dễ cháy!'
+    WHERE bin_id = $1 AND title = 'High temperature'
     ORDER BY time_at DESC
     LIMIT 1
   `;
@@ -49,12 +48,12 @@ export const warningHighTemperature = async (binId, temp) => {
     const logAndAlertPromises = [
       createEventLogService(
         binId,
-        `Nhiệt độ thùng rác cao, dễ cháy: ${temp} độ C`
+        `High temperature possibly fire: ${temp} Celcius`
       ),
       createSystemAlertService(
         binId,
-        "Nhiệt độ cao, dễ cháy!",
-        `Nhiệt độ thùng rác đã đạt ngưỡng rất cao: ${temp} độ C`,
+        "High temperature",
+        `High temperature, fire or explosion possibly occurs: ${temp} Celcius`,
         "danger"
       ),
     ];
@@ -106,13 +105,14 @@ export const warningHighTemperature = async (binId, temp) => {
   }
 };
 
-export const sendFillLevel = (level) => {
-  sendToFrontendBySocket({
+const sendFillLevel = (level) => {
+  protocolServices.sendToFrontendBySocket({
     id: "fill_level",
     level: level,
   });
 };
-export const getOledMessageService = async (id) => {
+
+const getOledMessageService = async (id) => {
   try {
     const sql = `
                 SELECT message 
@@ -126,7 +126,7 @@ export const getOledMessageService = async (id) => {
   }
 };
 
-export const updateOledMessageService = async (id, message) => {
+const updateOledMessageService = async (id, message) => {
   try {
     const sql = `
                 UPDATE public.bins  
@@ -141,7 +141,7 @@ export const updateOledMessageService = async (id, message) => {
   }
 };
 
-export const getTempInOneHourService = async (id) => {
+const getTempInOneHourService = async (id) => {
   try {
     let sql = `
                 SELECT b.temperature as temp, (b.time_at + INTERVAL '7 hours') as time
@@ -170,7 +170,7 @@ export const getTempInOneHourService = async (id) => {
   }
 };
 
-export const createTempHistoryService = async (id, nowTemp) => {
+const createTempHistoryService = async (id, nowTemp) => {
   try {
     const sql = `
                   INSERT INTO public.bin_histories (bin_id, temperature, time_at)
@@ -184,7 +184,7 @@ export const createTempHistoryService = async (id, nowTemp) => {
   }
 };
 
-export const updateFillLevelService = async (id, nowLevel) => {
+const updateFillLevelService = async (id, nowLevel) => {
   try {
     console.log(nowLevel);
     const sql = `
@@ -192,14 +192,15 @@ export const updateFillLevelService = async (id, nowLevel) => {
                   SET fill_level = $1
                   WHERE id = $2
                   `;
-    const params = [nowLevel / 100, id];
+    const params = [nowLevel, id];
     const result = await pool.query(sql, params);
     return result.rows[0];
   } catch (error) {
     console.log(error);
   }
 };
-export const getEventLogService = async (id) => {
+
+const getEventLogService = async (id) => {
   try {
     const sql = `
                   SELECT e.message, e.time_at FROM public.event_logs as e WHERE e.bin_id = $1
@@ -212,7 +213,7 @@ export const getEventLogService = async (id) => {
   }
 };
 
-export const createEventLogService = async (id, message) => {
+const createEventLogService = async (id, message) => {
   try {
     console.log(message);
     const sql = `
@@ -227,7 +228,7 @@ export const createEventLogService = async (id, message) => {
   }
 };
 
-export const getSystemAlertService = async (id) => {
+const getSystemAlertService = async (id) => {
   try {
     const sql = `
                   SELECT a.title, a.message, a.time_at, a.type FROM public.alerts as a WHERE a.bin_id = $1
@@ -239,7 +240,8 @@ export const getSystemAlertService = async (id) => {
     console.log(error);
   }
 };
-export const createSystemAlertService = async (id, title, message, type) => {
+
+const createSystemAlertService = async (id, title, message, type) => {
   try {
     console.log(message);
     const sql = `
@@ -254,8 +256,12 @@ export const createSystemAlertService = async (id, title, message, type) => {
   }
 };
 
-
-export const updateLedConfigService = async (id, led_mode, time_on_led, time_off_led) => {
+const updateLedConfigService = async (
+  id,
+  led_mode,
+  time_on_led,
+  time_off_led
+) => {
   try {
     const sql = `
         UPDATE public.bins  
@@ -271,4 +277,21 @@ export const updateLedConfigService = async (id, led_mode, time_on_led, time_off
     console.log(error);
     throw error;
   }
+};
+
+export default {
+  sendFaultSignal,
+  getOledMessageService,
+  updateOledMessageService,
+  updateLedConfigService,
+  createTempHistoryService,
+  getTempInOneHourService,
+  sendTemp,
+  updateFillLevelService,
+  createEventLogService,
+  createSystemAlertService,
+  sendFillLevel,
+  getEventLogService,
+  getSystemAlertService,
+  warningHighTemperature,
 };

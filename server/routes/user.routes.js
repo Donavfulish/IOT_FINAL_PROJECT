@@ -1,9 +1,10 @@
 import { Router } from "express";
-import { login, register } from "../controllers/user.controller.js";
+import userControllers from "../controllers/user.controllers.js";
 
 const router = Router();
 
-router.post("/login", login);
-router.post("/register", register);
+router.post("/login", userControllers.login);
+router.post("/register", userControllers.register);
+router.get("/managed-bin-id", userControllers.getManagedBinId);
 
 export default router;

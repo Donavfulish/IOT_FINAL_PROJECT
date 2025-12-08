@@ -37,12 +37,18 @@ const Account = ({ accountRole }: { accountRole: "guest" | "user" }) => {
       {openAccountPopup && (
         <div className="z-100 absolute top-15 right-2 rounded-md bg-gray-500 flex flex-col w-fit h-fit items-center">
           {accountRole == "guest" && (
-            <button className="w-full px-3 py-2 rounded-md hover:bg-gray-600 transition-colors duration-200">
+            <button
+              onClick={() => router.replace("/login")}
+              className="w-full px-3 py-2 rounded-md hover:bg-gray-600 transition-colors duration-200"
+            >
               Đăng nhập
             </button>
           )}
           {accountRole == "guest" && (
-            <button className="w-full px-3 py-2 rounded-md hover:bg-gray-600 transition-colors duration-200">
+            <button
+              onClick={() => router.replace("/register")}
+              className="w-full px-3 py-2 rounded-md hover:bg-gray-600 transition-colors duration-200"
+            >
               Đăng ký
             </button>
           )}
@@ -50,7 +56,6 @@ const Account = ({ accountRole }: { accountRole: "guest" | "user" }) => {
             <button
               onClick={() => {
                 useAuthStore.getState().logout();
-                router.replace("/");
               }}
               className="w-full px-3 py-2 rounded-md hover:bg-gray-600 transition-colors duration-200 text-red-300"
             >

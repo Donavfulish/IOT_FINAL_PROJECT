@@ -1,52 +1,50 @@
-import { sendCommandToDevice } from "../services/protocol.services.js";
-import {
-  sendFaultSignal,
-  getOledMessageService,
-  updateOledMessageService,
-  updateLedConfigService,
-  createTempHistoryService,
-  getTempInOneHourService,
-  sendTemp,
-  updateFillLevelService,
-  createEventLogService,
-  createSystemAlertService,
-  sendFillLevel,
-  getEventLogService,
-  getSystemAlertService,
-  warningHighTemperature,
-} from "../services/device.services.js";
+import protocolServices from "../services/protocol.services.js";
+import deviceServices from "../services/device.services.js";
 import { sendMail } from "../services/email.services.js";
 
-export const handleReceivingMqttMessage = async (device, data) => {
-  const binId = 1;
+const handleReceivingMqttMessage = async (binId, device, data) => {
+  if (!binId)
+    console.error(
+      "No binId is transferred to handleReivingMqttMessage function"
+    );
+
+  console.log("binId:", binId);
+  console.log("device:", device);
+  console.log("data:", data);
+
   if (device === "button") {
-    if (data === "device-malfunction") await sendFaultSignal(binId);
+    if (data === "device-malfunction")
+      await deviceServices.sendFaultSignal(binId);
   }
   if (device === "ultra") {
     console.log("ultra:", data);
-    updateFillLevelService(binId, data);
+    protocolServices.sendToFrontendBySocket({
+      id: "ultra",
+      fillLevel: data,
+    });
+    deviceServices.updateFillLevelService(binId, data);
     if (data == 100) {
-      createEventLogService(binId, "The smart bin is full");
-      createSystemAlertService(
+      deviceServices.createEventLogService(binId, "The smart bin is full");
+      deviceServices.createSystemAlertService(
         binId,
         `BIN-${binId}: Fill level is full`,
         "Fill Level: 100% - Critical Threshold Exceeded",
         "warning"
       );
       sendMail("Smart Bin", "Thùng rác đầy rồi", "nmluan23@clc.fitus.edu.vn");
-      sendFillLevel(data);
+      deviceServices.sendFillLevel(data);
     }
   }
   if (device === "temp") {
-    createTempHistoryService(binId, data);
-    sendTemp(data);
-    if (data > 50) await warningHighTemperature(binId, data);
+    deviceServices.createTempHistoryService(binId, data);
+    deviceServices.sendTemp(data);
+    if (data > 50) await deviceServices.warningHighTemperature(binId, data);
   }
 };
 
-export const openLed = (req, res) => {
+const openLed = (req, res) => {
   try {
-    const result = sendCommandToDevice("open_led");
+    const result = protocolServices.sendCommandToDevice("open_led");
     res.json({
       ok: true,
       message: "Command sent to device",
@@ -57,11 +55,11 @@ export const openLed = (req, res) => {
   }
 };
 
-export const messageToOled = (req, res) => {
+const messageToOled = (req, res) => {
   try {
     const device = "oled";
     const message = "This is massage from backend";
-    const result = sendCommandToDevice(device, message);
+    const result = protocolServices.sendCommandToDevice(device, message);
     res.json({
       ok: true,
       message: "Command sent to device",
@@ -72,10 +70,10 @@ export const messageToOled = (req, res) => {
   }
 };
 
-export const getOledMessage = async (req, res) => {
+const getOledMessage = async (req, res) => {
   try {
     const { id } = req.params;
-    const result = await getOledMessageService(id);
+    const result = await deviceServices.getOledMessageService(id);
     res.json({
       ok: true,
       message: "get message sucess",
@@ -86,11 +84,14 @@ export const getOledMessage = async (req, res) => {
   }
 };
 
-export const updateOledMessage = async (req, res) => {
+const updateOledMessage = async (req, res) => {
   try {
     const { id, message } = req.body;
-    const updateResult = await updateOledMessageService(id, message);
-    const espResult = sendCommandToDevice("oled", message);
+    const updateResult = await deviceServices.updateOledMessageService(
+      id,
+      message
+    );
+    const espResult = protocolServices.sendCommandToDevice("oled", message);
     res.json({
       ok: true,
       message: "update message sucess",
@@ -102,11 +103,11 @@ export const updateOledMessage = async (req, res) => {
   }
 };
 
-export const updateLedConfig = async (req, res) => {
+const updateLedConfig = async (req, res) => {
   try {
     const { id, led_mode, time_on_led, time_off_led } = req.body;
 
-    const updateResult = await updateLedConfigService(
+    const updateResult = await deviceServices.updateLedConfigService(
       id,
       led_mode,
       time_on_led,
@@ -119,7 +120,7 @@ export const updateLedConfig = async (req, res) => {
       end: time_off_led,
     };
 
-    const espResult = sendCommandToDevice("led", mqttPayload);
+    const espResult = protocolServices.sendCommandToDevice("led", mqttPayload);
 
     res.json({
       ok: true,
@@ -132,10 +133,10 @@ export const updateLedConfig = async (req, res) => {
     res.status(500).json({ ok: false, message: e.message });
   }
 };
-export const getTempInOneHour = async (req, res) => {
+const getTempInOneHour = async (req, res) => {
   try {
     const { id } = req.params;
-    const result = await getTempInOneHourService(id);
+    const result = await deviceServices.getTempInOneHourService(id);
 
     res.json({
       ok: true,
@@ -146,10 +147,10 @@ export const getTempInOneHour = async (req, res) => {
     res.status(500).json({ ok: false, message: e.message });
   }
 };
-export const getEventLogs = async (req, res) => {
+const getEventLogs = async (req, res) => {
   try {
     const { id } = req.params;
-    const result = await getEventLogService(id);
+    const result = await deviceServices.getEventLogService(id);
 
     res.json({
       ok: true,
@@ -161,10 +162,10 @@ export const getEventLogs = async (req, res) => {
   }
 };
 
-export const getSystemAlerts = async (req, res) => {
+const getSystemAlerts = async (req, res) => {
   try {
     const { id } = req.params;
-    const result = await getSystemAlertService(id);
+    const result = await deviceServices.getSystemAlertService(id);
     res.json({
       ok: true,
       message: "get system alerts sucess",
@@ -173,4 +174,16 @@ export const getSystemAlerts = async (req, res) => {
   } catch (e) {
     res.status(500).json({ ok: false, message: e.message });
   }
+};
+
+export default {
+  handleReceivingMqttMessage,
+  openLed,
+  messageToOled,
+  getOledMessage,
+  updateOledMessage,
+  getTempInOneHour,
+  getEventLogs,
+  getSystemAlerts,
+  updateLedConfig,
 };

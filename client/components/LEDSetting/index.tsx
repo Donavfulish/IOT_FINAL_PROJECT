@@ -16,7 +16,12 @@ interface LEDSettingProps {
   mode: "auto" | "manual";
   startTime: string;
   endTime: string;
-  onSave: (mode: "auto" | "manual", start: string, end: string) => Promise<void>;
+  onSave: (
+    mode: "auto" | "manual",
+    start: string,
+    end: string
+  ) => Promise<void>;
+  isEditable?: boolean;
 }
 
 const LEDSetting: React.FC<LEDSettingProps> = ({
@@ -24,6 +29,7 @@ const LEDSetting: React.FC<LEDSettingProps> = ({
   startTime,
   endTime,
   onSave,
+  isEditable = false,
 }) => {
   const [editMode, setEditMode] = useState<boolean>(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -84,7 +90,9 @@ const LEDSetting: React.FC<LEDSettingProps> = ({
                 ? "bg-[#00c2ff] text-black"
                 : "bg-[#1c2128] text-white"
             }`}
-            onClick={() => setConfig((prev) => ({ ...prev, ledMode: "manual" }))}
+            onClick={() =>
+              setConfig((prev) => ({ ...prev, ledMode: "manual" }))
+            }
           >
             Manual
           </button>
@@ -149,33 +157,34 @@ const LEDSetting: React.FC<LEDSettingProps> = ({
         )}
       </div>
 
-      {editMode ? (
-        <div className="w-full grid grid-cols-2 gap-2 select-none">
-          <button
-            onClick={handleSave}
-            disabled={isSaving}
-            className="mt-2 w-full py-1 bg-[#00c2ff] text-black rounded-md hover:bg-[#4fd6ff] transition-colors duration-200 disabled:opacity-50"
-          >
-            {isSaving ? "Saving..." : "Save"}
-          </button>
-          <button
-            onClick={handleCancelSave}
-            disabled={isSaving}
-            className="mt-2 w-full border border-gray-500 py-1 bg-[#13161b] text-red-500 rounded-md hover:bg-red-500 hover:text-white transition-colors duration-200"
-          >
-            Cancel
-          </button>
-        </div>
-      ) : (
-        <div className="w-full">
-          <button
-            onClick={() => setEditMode(true)}
-            className="mt-2 w-full py-1 bg-[#00c2ff] text-black rounded-md hover:bg-[#4fd6ff] transition-colors duration-200"
-          >
-            Edit
-          </button>
-        </div>
-      )}
+      {isEditable &&
+        (editMode ? (
+          <div className="w-full grid grid-cols-2 gap-2 select-none">
+            <button
+              onClick={handleSave}
+              disabled={isSaving}
+              className="mt-2 w-full py-1 bg-[#00c2ff] text-black rounded-md hover:bg-[#4fd6ff] transition-colors duration-200 disabled:opacity-50"
+            >
+              {isSaving ? "Saving..." : "Save"}
+            </button>
+            <button
+              onClick={handleCancelSave}
+              disabled={isSaving}
+              className="mt-2 w-full border border-gray-500 py-1 bg-[#13161b] text-red-500 rounded-md hover:bg-red-500 hover:text-white transition-colors duration-200"
+            >
+              Cancel
+            </button>
+          </div>
+        ) : (
+          <div className="w-full">
+            <button
+              onClick={() => setEditMode(true)}
+              className="mt-2 w-full py-1 bg-[#00c2ff] text-black rounded-md hover:bg-[#4fd6ff] transition-colors duration-200"
+            >
+              Edit
+            </button>
+          </div>
+        ))}
     </div>
   );
 };

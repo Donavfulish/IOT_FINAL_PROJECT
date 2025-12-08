@@ -1,7 +1,7 @@
 import firebaseServices from "../services/firebase.services.js";
 import admin from "firebase-admin";
 
-export const saveFCMToken = async (req, res) => {
+const saveFCMToken = async (req, res) => {
   const { userId, fcmToken } = req.body;
 
   if (userId && fcmToken) {
@@ -12,7 +12,7 @@ export const saveFCMToken = async (req, res) => {
   res.status(400).send({ success: false, message: "Invalid data" });
 };
 
-export const sendNotification = async (req, res) => {
+const sendNotification = async (req, res) => {
   const { userId, title, body, data } = req.body;
 
   try {
@@ -41,3 +41,5 @@ export const sendNotification = async (req, res) => {
     res.status(500).send({ success: false, message: error.message });
   }
 };
+
+export default { saveFCMToken, sendNotification };

@@ -1,8 +1,18 @@
 import WebSocket from "ws";
 
-export let wss = null;
+export let ws = null;
 
 /* eslint-disable no-console */
 export function initWebSocket(server) {
-  wss = new WebSocket.Server({ server });
+  ws = new WebSocket.Server({ server });
+  ws.on("close", (code, reason) => {
+    console.log(
+      `WS Client disconnected. Code: ${code}, Reason: ${reason.toString()}`
+    );
+  });
+
+  ws.on("error", (err) => {
+    console.error("WS Client connection error:", err);
+    ws.close();
+  });
 }

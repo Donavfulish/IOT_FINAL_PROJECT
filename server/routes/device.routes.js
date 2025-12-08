@@ -1,25 +1,16 @@
 import { Router } from "express";
-import {
-  openLed,
-  messageToOled,
-  getOledMessage,
-  updateOledMessage,
-  getTempInOneHour,
-  getEventLogs,
-  getSystemAlerts,
-  updateLedConfig,
-} from "../controllers/device.controller.js";
+import deviceControllers from "../controllers/device.controllers.js";
 
 const router = Router();
 
-router.get("/open-led", openLed);
-router.get("/message-to-oled", messageToOled);
-router.get("/oled/:id", getOledMessage)
-router.patch("/oled", updateOledMessage)
-router.patch("/led", updateLedConfig)
-router.get("/temp/:id/hour", getTempInOneHour);
-router.get("/event-log/:id", getEventLogs);
-router.get("/system-alert/:id", getSystemAlerts);
-router.patch("/oled", updateOledMessage);
+router.get("/open-led", deviceControllers.openLed);
+router.get("/message-to-oled", deviceControllers.messageToOled);
+router.get("/oled/:id", deviceControllers.getOledMessage);
+router.patch("/oled", deviceControllers.updateOledMessage);
+router.patch("/led", deviceControllers.updateLedConfig);
+router.get("/temp/:id/hour", deviceControllers.getTempInOneHour);
+router.get("/event-log/:id", deviceControllers.getEventLogs);
+router.get("/system-alert/:id", deviceControllers.getSystemAlerts);
+router.patch("/oled", deviceControllers.updateOledMessage);
 
 export default router;

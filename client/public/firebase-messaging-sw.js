@@ -30,8 +30,13 @@ messaging.onBackgroundMessage((payload) => {
 
   const notificationTitle = payload.notification.title;
   const notificationOptions = {
-    body: payload.notification.body,
-    icon: "/favicon.ico", // Đặt đường dẫn icon phù hợp
+    body: payload.notification?.body || payload.data?.body || "",
+    icon: "https://cdn-icons-png.flaticon.com/512/4021/4021663.png",
+    badge:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSgy6cH4pk8uBtQ-_MBHx5MtDO8ms62KxR0UQ&s", // Icon nhỏ trên status bar (Android)
+    vibrate: [200, 100, 200], // Rung
+    tag: "trash-bin-notification", // Gom nhóm thông báo
+    requireInteraction: true, // Thông báo không tự tắt
   };
 
   self.registration.showNotification(notificationTitle, notificationOptions);

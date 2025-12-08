@@ -17,7 +17,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app); // Có thể giữ lại nếu bạn dùng Analytics
+const analytics = typeof window !== "undefined" ? getAnalytics(app) : null; // Có thể giữ lại nếu bạn dùng Analytics
 
 // 1. Khởi tạo Messaging và export
 // Kiểm tra môi trường để đảm bảo hàm getMessaging chỉ chạy trên client

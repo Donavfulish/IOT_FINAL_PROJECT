@@ -16,6 +16,7 @@ interface LCDSettingProps {
   message: string;
   fillLevel: number;
   onSave: (message: string, isDisplayFill: boolean) => Promise<void>;
+  isEditable?: boolean;
 }
 
 const LCDSetting: React.FC<LCDSettingProps> = ({
@@ -23,6 +24,7 @@ const LCDSetting: React.FC<LCDSettingProps> = ({
   message,
   fillLevel,
   onSave,
+  isEditable = false,
 }) => {
   const [editMode, setEditMode] = useState<boolean>(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -48,10 +50,7 @@ const LCDSetting: React.FC<LCDSettingProps> = ({
   async function handleSave() {
     setIsSaving(true);
     try {
-      await onSave(
-        config.lcdMessage,
-        config.lcdMode === "trash-level"
-      );
+      await onSave(config.lcdMessage, config.lcdMode === "trash-level");
       setEditMode(false);
     } catch (error) {
       console.error("Save failed", error);
@@ -84,7 +83,9 @@ const LCDSetting: React.FC<LCDSettingProps> = ({
                   ? "bg-[#00c2ff] text-black"
                   : "bg-[#1c2128] text-white"
               }`}
-              onClick={() => setConfig((prev) => ({ ...prev, lcdMode: "trash-level" }))}
+              onClick={() =>
+                setConfig((prev) => ({ ...prev, lcdMode: "trash-level" }))
+              }
             >
               Trash Level
             </button>
@@ -94,7 +95,9 @@ const LCDSetting: React.FC<LCDSettingProps> = ({
                   ? "bg-[#00c2ff] text-black"
                   : "bg-[#1c2128] text-white"
               }`}
-              onClick={() => setConfig((prev) => ({ ...prev, lcdMode: "message" }))}
+              onClick={() =>
+                setConfig((prev) => ({ ...prev, lcdMode: "message" }))
+              }
             >
               Message
             </button>
@@ -127,33 +130,34 @@ const LCDSetting: React.FC<LCDSettingProps> = ({
         </div>
       </div>
 
-      {editMode ? (
-        <div className="w-full grid grid-cols-2 gap-2 select-none">
-          <button
-            onClick={handleSave}
-            disabled={isSaving}
-            className="mt-2 w-full py-1 bg-[#00c2ff] text-black rounded-md hover:bg-[#4fd6ff] transition-colors duration-200 disabled:opacity-50"
-          >
-            {isSaving ? "Saving..." : "Save"}
-          </button>
-          <button
-            onClick={handleCancelSave}
-            disabled={isSaving}
-            className="mt-2 w-full border border-gray-500 py-1 bg-[#13161b] text-red-500 rounded-md hover:bg-red-500 hover:text-white transition-colors duration-200"
-          >
-            Cancel
-          </button>
-        </div>
-      ) : (
-        <div className="w-full">
-          <button
-            onClick={() => setEditMode(true)}
-            className="mt-2 w-full py-1 bg-[#00c2ff] text-black rounded-md hover:bg-[#4fd6ff] transition-colors duration-200"
-          >
-            Edit
-          </button>
-        </div>
-      )}
+      {isEditable &&
+        (editMode ? (
+          <div className="w-full grid grid-cols-2 gap-2 select-none">
+            <button
+              onClick={handleSave}
+              disabled={isSaving}
+              className="mt-2 w-full py-1 bg-[#00c2ff] text-black rounded-md hover:bg-[#4fd6ff] transition-colors duration-200 disabled:opacity-50"
+            >
+              {isSaving ? "Saving..." : "Save"}
+            </button>
+            <button
+              onClick={handleCancelSave}
+              disabled={isSaving}
+              className="mt-2 w-full border border-gray-500 py-1 bg-[#13161b] text-red-500 rounded-md hover:bg-red-500 hover:text-white transition-colors duration-200"
+            >
+              Cancel
+            </button>
+          </div>
+        ) : (
+          <div className="w-full">
+            <button
+              onClick={() => setEditMode(true)}
+              className="mt-2 w-full py-1 bg-[#00c2ff] text-black rounded-md hover:bg-[#4fd6ff] transition-colors duration-200"
+            >
+              Edit
+            </button>
+          </div>
+        ))}
     </div>
   );
 };

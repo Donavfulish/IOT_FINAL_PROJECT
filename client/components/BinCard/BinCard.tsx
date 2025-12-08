@@ -1,4 +1,6 @@
 import React from "react";
+import { KeyRound } from "lucide-react";
+import Link from "next/link";
 
 interface BinData {
   binId: number;
@@ -6,17 +8,25 @@ interface BinData {
   fillLevel: number;
   battery: number;
   temperature: number;
+  isManaged?: boolean;
 }
 
-const BinCard: React.FC = () => {
+const BinCard = ({
+  binId,
+  status,
+  fillLevel,
+  battery,
+  temperature,
+  isManaged = false,
+}: BinData) => {
   // Mock data cho thùng rác
-  const binData: BinData = {
-    binId: 1,
-    status: "OPERATIONAL",
-    fillLevel: 45,
-    battery: 85,
-    temperature: 28,
-  };
+  // const binData: BinData = {
+  //   binId: 1,
+  //   status: "OPERATIONAL",
+  //   fillLevel: 45,
+  //   battery: 85,
+  //   temperature: 28,
+  // };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -40,38 +50,51 @@ const BinCard: React.FC = () => {
   };
 
   return (
-    <div className="w-full h-full bg-gray-950 p-6 flex items-center justify-center">
-      <div className="w-full max-w-2xl bg-gray-900 rounded-3xl p-8 shadow-2xl border border-gray-800 hover:border-blue-500 transition-colors duration-200">
+    <div className="relative w-full h-full bg-gray-950 p-6 flex items-center justify-center">
+      {isManaged && (
+        <div className="absolute top-1 left-12.5 p-2 rounded-md border border-yellow-200 bg-yellow-900 text-lg font-medium text-yellow-200">
+          <KeyRound />
+        </div>
+      )}
+
+      <div
+        className={
+          isManaged
+            ? "w-full max-w-2xl bg-gray-900 rounded-3xl p-8 shadow-2xl border border-yellow-200 center-glow hover:shadow-xltransition-all duration-200"
+            : "w-full max-w-2xl bg-gray-900 rounded-3xl p-8 shadow-2xl border border-gray-800 hover:border-blue-500 transition-colors duration-200"
+        }
+      >
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <Link
+          href={`/bin/${binId}`}
+          className="flex items-center justify-between mb-8"
+        >
           <h2 className="text-3xl font-bold text-white tracking-wide">
-            {binData.binId}
+            {binId}
           </h2>
           <div
             className={`px-6 py-2 rounded-full border ${getStatusColor(
-              binData.status
+              status
             )}`}
           >
             <span className="text-sm font-semibold tracking-wider">
-              {binData.status}
+              {status}
             </span>
           </div>
-        </div>
+        </Link>
 
         {/* Fill Level Section */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-3">
             <span className="text-gray-400 text-lg">Fill Level</span>
-            <span className="text-white text-3xl font-bold">
-              {binData.fillLevel}%
-            </span>
+            <span className="text-white text-3xl font-bold">{fillLevel}%</span>
           </div>
           <div className="w-full bg-gray-800 rounded-full h-3 overflow-hidden">
             <div
               className={`h-full rounded-full transition-all duration-500 ${getFillLevelColor(
-                binData.fillLevel
+                fillLevel
               )}`}
-              style={{ width: `${binData.fillLevel}%` }}
+              style={{ width: `${fillLevel}%` }}
             />
           </div>
         </div>
@@ -84,16 +107,14 @@ const BinCard: React.FC = () => {
           {/* Battery */}
           <div className="bg-gray-800 rounded-lg py-3 px-5">
             <div className="text-gray-400 text-lg mb-3">Battery</div>
-            <div className="text-cyan-400 text-2xl font-bold">
-              {binData.battery}%
-            </div>
+            <div className="text-cyan-400 text-2xl font-bold">{battery}%</div>
           </div>
 
           {/* Temperature */}
           <div className="bg-gray-800 rounded-lg py-3 px-5">
             <div className="text-gray-400 text-lg mb-3">Temp</div>
             <div className="text-emerald-400 text-2xl font-bold">
-              {binData.temperature}°C
+              {temperature}°C
             </div>
           </div>
         </div>

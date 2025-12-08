@@ -1,7 +1,8 @@
 import { api } from "@/lib/axios";
 
+export const useGetOled = async (id: number | undefined) => {
+  if (!id) return;
 
-export const useGetOled = async (id: string) => {
   try {
     const result = await api.get(`api/device/oled/${id}`);
     return result;
@@ -11,9 +12,11 @@ export const useGetOled = async (id: string) => {
 };
 
 export const useUpdateOled = async (payload: {
-  id: string;
+  id: number | undefined;
   message: string;
 }) => {
+  if (!payload.id) return;
+
   try {
     const result = await api.patch(`api/device/oled`, payload);
     return result;

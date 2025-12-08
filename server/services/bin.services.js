@@ -1,5 +1,18 @@
 import pool from "../config/db.js";
 
+const getAllBins = async () => {
+  const sql = `
+    SELECT
+      id, battery, fill_level, is_display_fill, message, led_mode,
+      time_on_led, time_off_led
+    FROM BINS
+  `;
+
+  const binsData = (await pool.query(sql))?.rows || [];
+
+  return binsData;
+};
+
 const getBinDetailById = async (id) => {
   const detailSql = `
     SELECT *
@@ -16,7 +29,6 @@ const getBinDetailById = async (id) => {
 
   const promises = [pool.query(detailSql, [id]), pool.query(alertsSql, [id])];
   const [detailResult, alertsResult] = await Promise.all(promises);
-
 
   const [detail, alerts] = [
     detailResult.rows?.[0] || null,
@@ -43,4 +55,4 @@ const getBinDetailById = async (id) => {
   };
 };
 
-export default { getBinDetailById };
+export default { getBinDetailById, getAllBins };

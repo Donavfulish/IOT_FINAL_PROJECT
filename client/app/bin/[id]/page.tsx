@@ -11,9 +11,11 @@ import QuickStatus from "@/components/QuickStatus/QuickStatus";
 import LEDSetting from "@/components/LEDSetting";
 import LCDSetting from "@/components/LCDSetting";
 import { useUpdateLed } from "@/hook/ledHook";
-import { useBinDetailById, BinDetailType } from "@/hook/detailHook";
+import { useBinDetailById, BinDetailType } from "@/hook/binHook";
 import { useUpdateOled } from "@/hook/oledHook";
 import { useParams } from "next/navigation";
+import LoadingSpinner from "@/components/LoadingSpinner/LoadingSpinner";
+import { useAuthStore } from "@/store/auth.store";
 
 interface Temp {
   time: Date;
@@ -21,7 +23,8 @@ interface Temp {
 }
 
 export default function BinDetailsPage() {
-  const { id } = useParams();
+  const id = Number(useParams().id);
+  const user = useAuthStore((store) => store.user);
 
   // State
   const [binDetail, setBinDetail] = useState<BinDetailType | undefined>(
@@ -61,10 +64,13 @@ export default function BinDetailsPage() {
   useEffect(() => {
     const ws = createSocket();
     ws.onmessage = (e) => {
-      console.log("e", e);
       const payload = JSON.parse(e.data);
-      if (payload.id === "temp") {
+      if (payload.id == "temp") {
+        console.log("temperature:", payload);
         setNowTemp(payload.temp);
+      } else if (payload.id == "ultra") {
+        console.log("ws ultra:", payload);
+        setBinDetail((prev) => ({ ...prev!, fill_level: payload.fillLevel }));
       }
     };
 
@@ -105,7 +111,7 @@ export default function BinDetailsPage() {
 
     // 1. Update OLED Message
     await useUpdateOled({
-      id: String(id),
+      id: id,
       message: message,
     });
 
@@ -136,7 +142,7 @@ export default function BinDetailsPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <p>Loading data...</p> {/* Thay bằng LoadingSpinner nếu có */}
+        <LoadingSpinner />
       </div>
     );
   }
@@ -158,7 +164,7 @@ export default function BinDetailsPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left Column - Charts & Logs */}
             <div className="lg:col-span-2 space-y-6">
-              <div className="w-full h-[320px]">
+              <div className="w-full h-80">
                 <TemperatureChart tempHour={tempHour} />
               </div>
 
@@ -170,7 +176,7 @@ export default function BinDetailsPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3 max-h-64 overflow-y-auto">
+                  <div className="space-y-3 max-h-100 overflow-y-auto">
                     {binDetail.alerts && binDetail.alerts.length > 0 ? (
                       binDetail.alerts.map((alert, index) => (
                         <div
@@ -221,6 +227,7 @@ export default function BinDetailsPage() {
                 message={binDetail.message}
                 fillLevel={binDetail.fill_level}
                 onSave={handleSaveLCD}
+                isEditable={user?.bin_id == id}
               />
 
               <LEDSetting
@@ -228,6 +235,7 @@ export default function BinDetailsPage() {
                 startTime={binDetail.time_on_led}
                 endTime={binDetail.time_off_led}
                 onSave={handleSaveLED}
+                isEditable={user?.bin_id == id}
               />
               {/* API-connected LED Setting */}
               {/* {isAuthenticated && (

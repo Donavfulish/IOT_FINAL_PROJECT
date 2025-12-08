@@ -3,6 +3,7 @@ export const createSocket = (): WebSocket => {
 
   socket.onopen = () => console.log("WS connected");
   socket.onclose = () => console.log("WS closed");
+  socket.onerror = (e) => console.error("WS error:", e);
 
   return socket;
 };

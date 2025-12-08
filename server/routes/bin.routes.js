@@ -1,8 +1,9 @@
 import { Router } from "express";
-import { getBinDetailById } from "../controllers/bin.controller.js";
+import binControllers from "../controllers/bin.controllers.js";
 
 const router = Router();
 
-router.get("/:id", getBinDetailById);
+router.get("/:id", binControllers.getBinDetailById);
+router.get("/", binControllers.getAllBins);
 
 export default router;

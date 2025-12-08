@@ -1,10 +1,27 @@
 import pool from "../config/db.js";
+import { sendNotification } from "../controllers/firebase.controller.js";
 import { sendToFrontendBySocket } from "./protocol.services.js";
+import firebaseServices from "./firebase.services.js";
+import admin from "firebase-admin";
 
-export const sendFaultSignal = () => {
+export const sendFaultSignal = async (binId) => {
+  if (!binId) return;
+
   sendToFrontendBySocket({
     id: "button-fault-signal",
   });
+
+  const logAndAlertPromises = [
+    createEventLogService(binId, `Báo cáo thùng rác có hư hỏng!`),
+    createSystemAlertService(
+      binId,
+      "Báo cáo hư hỏng!",
+      "Thùng rác bị phản ánh hư hỏng thiết bị hoặc không hoạt động đúng cách",
+      "warning"
+    ),
+  ];
+
+  await Promise.all(logAndAlertPromises);
 };
 
 export const sendTemp = (temp) => {
@@ -14,6 +31,87 @@ export const sendTemp = (temp) => {
   });
 };
 
+export const warningHighTemperature = async (binId, temp) => {
+  const nearestTempAlertSql = `
+    SELECT time_at
+    FROM ALERTS
+    WHERE bin_id = $1 AND title = 'Nhiệt độ cao, dễ cháy!'
+    ORDER BY time_at DESC
+    LIMIT 1
+  `;
+
+  const nearestTempAlertResult = await pool.query(nearestTempAlertSql, [binId]);
+  const nearestTime = nearestTempAlertResult?.rows?.[0]?.time_at || null;
+
+  // Nếu hiện tại cách alert gần nhất là 15 phút thì alert lần nữa
+  if (!nearestTime || new Date() - new Date(nearestTime) > 15 * 60 * 1000) {
+    // 1. Định nghĩa các tác vụ Logging và Alert
+    const logAndAlertPromises = [
+      createEventLogService(
+        binId,
+        `Nhiệt độ thùng rác cao, dễ cháy: ${temp} độ C`
+      ),
+      createSystemAlertService(
+        binId,
+        "Nhiệt độ cao, dễ cháy!",
+        `Nhiệt độ thùng rác đã đạt ngưỡng rất cao: ${temp} độ C`,
+        "danger"
+      ),
+    ];
+
+    // 2. Lấy danh sách quản lý
+    const managerSql = `
+      SELECT id
+      FROM USERS
+      WHERE bin_id = $1
+    `;
+
+    const managers = (await pool.query(managerSql, [binId]))?.rows;
+
+    if (!managers || managers.length === 0) {
+      // Nếu không có người quản lý, vẫn hoàn thành việc ghi log/alert rồi thoát
+      await Promise.all(logAndAlertPromises);
+      return;
+    }
+
+    // 3. Lấy tất cả Tokens và lọc bỏ các token null/undefined
+    const tokens = (
+      await Promise.all(
+        managers.map((user) => firebaseServices.getFCMToken(user.id))
+      )
+    ).filter((token) => token);
+
+    if (tokens.length === 0) {
+      // Nếu không có Token nào hợp lệ, vẫn hoàn thành việc ghi log/alert rồi thoát
+      await Promise.all(logAndAlertPromises);
+      return;
+    }
+
+    // 4. Tạo mảng các Promise Gửi thông báo
+    const notificationPromises = tokens.map((token) => {
+      const message = {
+        notification: {
+          title: "Nhiệt độ cao, dễ cháy!",
+          body: `Nhiệt độ thùng rác đã đạt ngưỡng rất cao: ${temp} độ C`,
+        },
+        data: {},
+        token: token,
+      };
+
+      return admin.messaging().send(message);
+    });
+
+    // 5. Chạy tất cả các Promise (Logging, Alert, và Notifications) song song
+    await Promise.all([...logAndAlertPromises, ...notificationPromises]);
+  }
+};
+
+export const sendFillLevel = (level) => {
+  sendToFrontendBySocket({
+    id: "fill_level",
+    level: level,
+  });
+};
 export const getOledMessageService = async (id) => {
   try {
     const sql = `
@@ -101,6 +199,19 @@ export const updateFillLevelService = async (id, nowLevel) => {
     console.log(error);
   }
 };
+export const getEventLogService = async (id) => {
+  try {
+    const sql = `
+                  SELECT e.message, e.time_at FROM public.event_logs as e WHERE e.bin_id = $1
+                   `;
+    const params = [id];
+    const result = await pool.query(sql, params);
+    return result.rows;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const createEventLogService = async (id, message) => {
   try {
     console.log(message);
@@ -115,14 +226,27 @@ export const createEventLogService = async (id, message) => {
     console.log(error);
   }
 };
-export const createSystemAlertService = async (id, title, message) => {
+
+export const getSystemAlertService = async (id) => {
+  try {
+    const sql = `
+                  SELECT a.title, a.message, a.time_at, a.type FROM public.alerts as a WHERE a.bin_id = $1
+                   `;
+    const params = [id];
+    const result = await pool.query(sql, params);
+    return result.rows;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const createSystemAlertService = async (id, title, message, type) => {
   try {
     console.log(message);
     const sql = `
-                  INSERT INTO public.alerts (bin_id,title, message, time_at)
-                  VALUES($1 ,$2 ,$3, NOW())
+                  INSERT INTO public.alerts (bin_id,title, message, time_at, type)
+                  VALUES($1 ,$2 ,$3, NOW(), $4)
                   `;
-    const params = [id, title, message];
+    const params = [id, title, message, type];
     const result = await pool.query(sql, params);
     return result.rows[0];
   } catch (error) {

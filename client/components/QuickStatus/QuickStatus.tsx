@@ -39,10 +39,14 @@ const StatItem: React.FC<StatItemProps> = ({
 interface QuickStatusProps {
   battery: number;
   fillLevel: number;
-  // temperature: number; // Uncomment nếu API có trả về nhiệt độ
+  temperature: number; // Uncomment nếu API có trả về nhiệt độ
 }
 
-const QuickStatus: React.FC<QuickStatusProps> = ({ battery, fillLevel }) => {
+const QuickStatus: React.FC<QuickStatusProps> = ({
+  battery,
+  fillLevel,
+  temperature,
+}) => {
   return (
     <div className="bg-gray-950 flex items-center justify-center">
       <div className="w-full bg-gray-900 rounded-3xl p-8 shadow-2xl card-primary px-5!">
@@ -57,13 +61,13 @@ const QuickStatus: React.FC<QuickStatusProps> = ({ battery, fillLevel }) => {
         />
 
         {/* Placeholder cho Temperature nếu sau này API có */}
-        {/* <StatItem
+        <StatItem
           icon={<Thermometer className="w-5 h-5" />}
           label="Current Temperature"
-          value={`-- °C`}
+          value={`${temperature} °C`}
           percentage={0}
           color="transparent"
-        /> */}
+        />
 
         <StatItem
           icon={<Droplet className="w-5 h-5" />}

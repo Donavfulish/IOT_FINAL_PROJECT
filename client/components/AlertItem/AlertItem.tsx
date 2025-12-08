@@ -1,6 +1,14 @@
 import React from "react";
-
-export const AlertItem = () => {
+interface Alert {
+  title: string;
+  message: string;
+  time_at: string;
+  type: string;
+}
+interface Props {
+  alert: Alert;
+}
+export const AlertItem = ({ alert }: Props) => {
   const colors = [
     {
       name: "danger",
@@ -74,8 +82,7 @@ export const AlertItem = () => {
       bg: "bg-[#0C222F]",
     },
   ];
-  const type = "info";
-  const color = colors.filter((item) => item.name === type)[0];
+  const color = colors.filter((item) => item.name === alert.type)[0];
   return (
     <div
       className={` border ${color.border} rounded-xl p-5 flex items-start gap-4  transition-all group cursor-pointer ${color.bg} `}
@@ -83,12 +90,10 @@ export const AlertItem = () => {
       <div className="mt-1">{color.icon}</div>
       <div className="flex-1 min-w-0">
         <h4 className="font-semibold text-white transition-colors">
-          BIN-76523: High Temperature Detected
+          {alert.title}
         </h4>
-        <p className="text-sm text-[#8B949E] mt-1">
-          Temperature 45°C - Critical Threshold Exceeded
-        </p>
-        <p className="text-xs text-[#8B949E]  mt-2">2025-11-03 09:15:21Z</p>
+        <p className="text-sm text-[#8B949E] mt-1">{alert.message}</p>
+        <p className="text-xs text-[#8B949E]  mt-2">{alert.time_at}</p>
       </div>
     </div>
   );

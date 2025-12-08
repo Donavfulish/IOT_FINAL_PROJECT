@@ -23,7 +23,7 @@ export const useBinDetailById = async (
 ): Promise<BinDetailType | undefined> => {
   if (!id) return undefined;
   try {
-    const res = await api.get(`/api/bin/${id}`);
+    const res = await api.get(`/bin/${id}`);
     return res.data;
   } catch (e) {
     console.error("Login failed: ", e);

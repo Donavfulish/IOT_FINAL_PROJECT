@@ -101,19 +101,22 @@ export const updateOledMessage = async (req, res) => {
     res.status(500).json({ ok: false, message: e.message });
   }
 };
-<<<<<<< HEAD
-
 
 export const updateLedConfig = async (req, res) => {
   try {
     const { id, led_mode, time_on_led, time_off_led } = req.body;
 
-    const updateResult = await updateLedConfigService(id, led_mode, time_on_led, time_off_led);
+    const updateResult = await updateLedConfigService(
+      id,
+      led_mode,
+      time_on_led,
+      time_off_led
+    );
 
     const mqttPayload = {
-        mode: led_mode,   
-        start: time_on_led, 
-        end: time_off_led   
+      mode: led_mode,
+      start: time_on_led,
+      end: time_off_led,
     };
 
     const espResult = sendCommandToDevice("led", mqttPayload);
@@ -129,7 +132,6 @@ export const updateLedConfig = async (req, res) => {
     res.status(500).json({ ok: false, message: e.message });
   }
 };
-=======
 export const getTempInOneHour = async (req, res) => {
   try {
     const { id } = req.params;
@@ -172,4 +174,3 @@ export const getSystemAlerts = async (req, res) => {
     res.status(500).json({ ok: false, message: e.message });
   }
 };
->>>>>>> origin/feature/push-notification-backup

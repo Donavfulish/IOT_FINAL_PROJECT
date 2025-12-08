@@ -43,3 +43,5 @@ next-env.d.ts
 
 # history
 .history/*
+server/*.json
+server/iot-trashbin-final-firebase-adminsdk-fbsvc-2d7304f8e5.json

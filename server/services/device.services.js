@@ -203,7 +203,7 @@ const updateFillLevelService = async (id, nowLevel) => {
 const getEventLogService = async (id) => {
   try {
     const sql = `
-                  SELECT e.message, e.time_at FROM public.event_logs as e WHERE e.bin_id = $1
+                  SELECT e.message, e.time_at FROM public.event_logs as e WHERE e.bin_id = $1 ORDER BY e.time_at desc
                    `;
     const params = [id];
     const result = await pool.query(sql, params);
@@ -231,7 +231,7 @@ const createEventLogService = async (id, message) => {
 const getSystemAlertService = async (id) => {
   try {
     const sql = `
-                  SELECT a.title, a.message, a.time_at, a.type FROM public.alerts as a WHERE a.bin_id = $1
+                  SELECT a.title, a.message, a.time_at, a.type FROM public.alerts as a  WHERE a.bin_id = $1 ORDER BY a.time_at desc
                    `;
     const params = [id];
     const result = await pool.query(sql, params);

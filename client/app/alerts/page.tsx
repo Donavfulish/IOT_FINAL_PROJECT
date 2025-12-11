@@ -10,6 +10,7 @@ import LoadingSpinner from "@/components/LoadingSpinner/LoadingSpinner";
 import { useAuthStore } from "@/store/auth.store";
 
 interface Alert {
+  bin_id: number;
   title: string;
   message: string;
   time_at: string;
@@ -19,15 +20,6 @@ const AlertsPage = () => {
   const user = useAuthStore((store) => store.user);
   const [systemAlerts, setSystemAlerts] = useState<Alert[]>([]);
 
-  if (!user) return <LoadingSpinner />;
-  if (user.role == "guest") {
-    return (
-      <div className="flex w-screen h-screen justify-center items-center">
-        <p>You don't have the permission to access this page</p>
-      </div>
-    );
-  }
-
   useEffect(() => {
     let mounted = true;
     async function fetchSystemAlerts() {
@@ -36,7 +28,11 @@ const AlertsPage = () => {
         const data = await useGetSystemAlerts(user.bin_id);
 
         if (mounted) {
-          setSystemAlerts(data.result);
+          const newSystemAlerts = data.result.map((item: Alert) => {
+            item.bin_id = user.bin_id;
+            return item;
+          });
+          setSystemAlerts(newSystemAlerts);
         }
       } catch (e) {
         console.log(e);
@@ -46,7 +42,15 @@ const AlertsPage = () => {
     return () => {
       mounted = false;
     };
-  }, [user]);
+  }, []);
+  if (!user) return <LoadingSpinner />;
+  if (user.role == "guest") {
+    return (
+      <div className="flex w-screen h-screen justify-center items-center">
+        <p>You don't have the permission to access this page</p>
+      </div>
+    );
+  }
 
   return (
     <div>

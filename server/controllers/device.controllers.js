@@ -31,7 +31,7 @@ const handleReceivingMqttMessage = async (binId, device, data) => {
         "Fill Level: 100% - Critical Threshold Exceeded",
         "warning"
       );
-      sendMail("Smart Bin", "Thùng rác đầy rồi", "nmluan23@clc.fitus.edu.vn");
+      sendMail("Smart Bin", `Your bin (${binId}) has been fulled!`, "nmluan23@clc.fitus.edu.vn");
       deviceServices.sendFillLevel(data);
     }
   }

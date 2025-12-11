@@ -44,17 +44,17 @@ const registerUserAndGet = async (registerPayload) => {
   if (userCheckResult.rowCount == 1)
     return {
       success: false,
-      log: "Email đã tồn tại",
+      log: "Email existed",
     };
   if (binCheckResult.rowCount == 0)
     return {
       success: false,
-      log: "ID thùng rác không tồn tại",
+      log: "Bin ID does not exist",
     };
   else if (binCheckResult.rows[0].password != bin_password)
     return {
       success: false,
-      log: "Mật khẩu thùng rác sai",
+      log: "Wrong bin password",
     };
 
   const registerSql = `
@@ -70,12 +70,12 @@ const registerUserAndGet = async (registerPayload) => {
   if (!userData)
     return {
       success: false,
-      log: "Không thể tạo tài khoản",
+      log: "Unable to register the account",
     };
 
   return {
     success: true,
-    log: "Đăng ký thành công",
+    log: "Register account successfully!",
     user: {
       id: userData.id,
       email: userData.email,

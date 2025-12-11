@@ -27,21 +27,21 @@ const RegisterPage = () => {
     e.preventDefault();
 
     if (!email || !password || !confirmPassword || !binId || !binPassword) {
-      alert("Vui lòng nhập đầy đủ thông tin!");
+      alert("Please provide all required information");
       return;
     }
 
     if (!isValidEmail(email)) {
-      alert("Email không hợp lệ");
+      alert("Unvalid email format");
       return;
     }
 
     if (password.length < 8) {
-      alert("Mật khẩu phải dài tối thiểu 8 ký tự");
+      alert("Password must contain at least 8 characters");
       return;
     }
     if (password != confirmPassword) {
-      alert("Mật khẩu chưa trùng khớp");
+      alert("Confirmed password does not match");
       return;
     }
 
@@ -56,7 +56,7 @@ const RegisterPage = () => {
 
     if (!result.success) alert(result.log);
     else {
-      alert("Đăng ký tài khoản thành công.\nQuay về trang đăng nhập");
+      alert("Register successfully.\nBack to login");
       router.replace("/");
     }
   };

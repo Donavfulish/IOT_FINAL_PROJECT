@@ -6,7 +6,6 @@ const saveFCMToken = async (req, res) => {
 
   if (userId && fcmToken) {
     await firebaseServices.saveFCMToken(userId, fcmToken);
-    console.log(`[SERVER] Đã lưu Token cho user ${userId}: ${fcmToken}`);
     return res.status(200).send({ success: true, message: "Token saved" });
   }
   res.status(400).send({ success: false, message: "Invalid data" });
@@ -21,23 +20,22 @@ const sendNotification = async (req, res) => {
     if (!targetToken) {
       return res
         .status(404)
-        .send({ message: `Không tìm thấy token cho user ${userId}` });
+        .send({ message: `Fail to find token for user: ${userId}` });
     }
 
     const message = {
       notification: {
-        title: title || "Cảnh báo hệ thống",
-        body: body || "Có thông tin cập nhật.",
+        title: title || "System notification",
+        body: body || "There is a notification from the system",
       },
       data: data, // Để gửi dữ liệu tùy chỉnh cho client xử lý
       token: targetToken,
     };
 
     const response = await admin.messaging().send(message);
-    console.log("[SERVER] Thông báo đã gửi thành công:", response);
-    res.status(200).send({ success: true, message: "Thông báo đã được gửi" });
+    res.status(200).send({ success: true, message: "Notification sent" });
   } catch (error) {
-    console.error("[SERVER] Lỗi khi gửi thông báo:", error);
+    console.error("Internal Server Error", error);
     res.status(500).send({ success: false, message: error.message });
   }
 };

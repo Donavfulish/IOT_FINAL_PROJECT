@@ -44,7 +44,7 @@ export const useRegister = async (
   if (!payload)
     return {
       success: false,
-      log: "Thông tin đăng ký rỗng",
+      log: "Empty data",
     };
 
   try {
@@ -56,7 +56,7 @@ export const useRegister = async (
     console.error("Login failed: ", e);
     return {
       success: false,
-      log: "Lỗi máy chủ nội bộ",
+      log: "Internal Server Error",
     };
   }
 };

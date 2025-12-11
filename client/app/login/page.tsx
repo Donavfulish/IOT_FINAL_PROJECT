@@ -24,7 +24,7 @@ const LoginPage = () => {
     const res = await useLogin(payload);
 
     if (!res) {
-      alert("Đăng nhập thất bại!");
+      alert("Login failed!");
     } else {
       router.replace("/");
     }

@@ -26,6 +26,7 @@ export default function HomePage() {
   //   return () => cleanSocket(ws);
   // }, []);
   const user = useAuthStore((state) => state.user);
+
   const [bins, setBins] = useState<BinPreview[]>([]);
 
   useEffect(() => {
@@ -37,7 +38,7 @@ export default function HomePage() {
     fetching();
   }, []);
 
-  if (!user) return <LoadingSpinner />;
+  if (user === undefined) return <LoadingSpinner />;
 
   return (
     <>
@@ -51,40 +52,45 @@ export default function HomePage() {
       )} */}
 
       <LoginRedirection />
-      <Header accountRole={user.role} />
-      <div className="p-8 bg-[#030712]">
-        <SearchBar />
-      </div>
-      <div className="grid grid-cols-3">
-        {bins.length == 0 && <LoadingSpinner />}
-        {bins
-          .filter((bin) => bin.id === user?.bin_id)
-          .map((bin) => (
-            <BinCard
-              key={bin.id}
-              binId={bin.id}
-              status="OPERATIONAL"
-              fillLevel={bin.fill_level}
-              battery={bin.battery}
-              temperature={50}
-              isManaged={true}
-            />
-          ))}
+      {user && (
+        <>
+          {" "}
+          <Header accountRole={user!.role} />
+          <div className="p-8 bg-[#030712]">
+            <SearchBar />
+          </div>
+          <div className="grid grid-cols-3">
+            {bins.length == 0 && <LoadingSpinner />}
+            {bins
+              .filter((bin) => bin.id === user?.bin_id)
+              .map((bin) => (
+                <BinCard
+                  key={bin.id}
+                  binId={bin.id}
+                  status="OPERATIONAL"
+                  fillLevel={bin.fill_level}
+                  battery={bin.battery}
+                  temperature={50}
+                  isManaged={true}
+                />
+              ))}
 
-        {bins
-          .filter((bin) => bin.id !== user?.bin_id)
-          .sort((first, second) => first.fill_level - second.fill_level)
-          .map((bin) => (
-            <BinCard
-              key={bin.id}
-              binId={bin.id}
-              status="OPERATIONAL"
-              fillLevel={bin.fill_level}
-              battery={bin.battery}
-              temperature={50}
-            />
-          ))}
-      </div>
+            {bins
+              .filter((bin) => bin.id !== user?.bin_id)
+              .sort((first, second) => first.fill_level - second.fill_level)
+              .map((bin) => (
+                <BinCard
+                  key={bin.id}
+                  binId={bin.id}
+                  status="OPERATIONAL"
+                  fillLevel={bin.fill_level}
+                  battery={bin.battery}
+                  temperature={50}
+                />
+              ))}
+          </div>{" "}
+        </>
+      )}
     </>
   );
 }

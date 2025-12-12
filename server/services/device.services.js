@@ -1,7 +1,6 @@
 import pool from "../config/db.js";
 import protocolServices from "./protocol.services.js";
-import firebaseServices from "./firebase.services.js";
-import admin from "firebase-admin";
+import pushbulletServices from "./pushbullet.services.js";
 
 const sendFaultSignal = async (binId) => {
   if (!binId) return;
@@ -44,8 +43,7 @@ const warningHighTemperature = async (binId, temp) => {
 
   // Nếu hiện tại cách alert gần nhất là 15 phút thì alert lần nữa
   if (!nearestTime || new Date() - new Date(nearestTime) > 15 * 60 * 1000) {
-    // 1. Định nghĩa các tác vụ Logging và Alert
-    const logAndAlertPromises = [
+    const promises = [
       createEventLogService(
         binId,
         `High temperature possibly fire: ${temp} Celcius`
@@ -56,52 +54,13 @@ const warningHighTemperature = async (binId, temp) => {
         `High temperature, fire or explosion possibly occurs: ${temp} Celcius`,
         "danger"
       ),
+      pushbulletServices.pushNotification(
+        "High temperature",
+        `Fire or explosion concerns! Temperature reach ${temp} Celcius`
+      ),
     ];
 
-    // 2. Lấy danh sách quản lý
-    const managerSql = `
-      SELECT id
-      FROM USERS
-      WHERE bin_id = $1
-    `;
-
-    const managers = (await pool.query(managerSql, [binId]))?.rows;
-
-    if (!managers || managers.length === 0) {
-      // Nếu không có người quản lý, vẫn hoàn thành việc ghi log/alert rồi thoát
-      await Promise.all(logAndAlertPromises);
-      return;
-    }
-
-    // 3. Lấy tất cả Tokens và lọc bỏ các token null/undefined
-    const tokens = (
-      await Promise.all(
-        managers.map((user) => firebaseServices.getFCMToken(user.id))
-      )
-    ).filter((token) => token);
-
-    if (tokens.length === 0) {
-      // Nếu không có Token nào hợp lệ, vẫn hoàn thành việc ghi log/alert rồi thoát
-      await Promise.all(logAndAlertPromises);
-      return;
-    }
-
-    // 4. Tạo mảng các Promise Gửi thông báo
-    const notificationPromises = tokens.map((token) => {
-      const message = {
-        notification: {
-          title: "Nhiệt độ cao, dễ cháy!",
-          body: `Nhiệt độ thùng rác đã đạt ngưỡng rất cao: ${temp} độ C`,
-        },
-        data: {},
-        token: token,
-      };
-
-      return admin.messaging().send(message);
-    });
-
-    // 5. Chạy tất cả các Promise (Logging, Alert, và Notifications) song song
-    await Promise.all([...logAndAlertPromises, ...notificationPromises]);
+    await Promise.all(promises);
   }
 };
 

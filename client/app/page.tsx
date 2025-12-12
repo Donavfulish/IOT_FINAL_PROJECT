@@ -6,10 +6,10 @@ import Header from "@/components/Header";
 import LoginRedirection from "@/components/LoginRedirection";
 import { useEffect, useState } from "react";
 import { createSocket, cleanSocket } from "@/lib/socket";
-import { useSendNotification } from "@/hook/notificationHook";
 import { useAuthStore } from "@/store/auth.store";
 import { BinPreview, useAllBins } from "@/hook/binHook";
 import LoadingSpinner from "@/components/LoadingSpinner/LoadingSpinner";
+import axios from "axios";
 
 // Đây là trang dashboard
 export default function HomePage() {
@@ -41,14 +41,31 @@ export default function HomePage() {
 
   return (
     <>
-      {/* {user && (
+      {user && (
         <button
-          onClick={() => useSendNotification(user.id, "Title", "Body", {})}
+          onClick={async () => {
+            const res = await axios.post(
+              "https://api.pushbullet.com/v2/pushes",
+              {
+                type: "note",
+                title: "Title",
+                body: "Body",
+              },
+              {
+                headers: {
+                  "Access-Token": process.env.PUSHBULLET_TOKEN,
+                  "Content-Type": "application/json",
+                },
+              }
+            );
+            console.log("Push sent:", res.data);
+            return res.data;
+          }}
           className="w-100 h-100 border border-gray-200 bg-blue-200/80"
         >
           Click here to get pushed notification
-        </button> 
-      )} */}
+        </button>
+      )}
 
       <LoginRedirection />
       <Header accountRole={user.role} />

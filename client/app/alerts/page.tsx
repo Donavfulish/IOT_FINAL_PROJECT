@@ -19,15 +19,6 @@ const AlertsPage = () => {
   const user = useAuthStore((store) => store.user);
   const [systemAlerts, setSystemAlerts] = useState<Alert[]>([]);
 
-  if (!user) return <LoadingSpinner />;
-  if (user.role == "guest") {
-    return (
-      <div className="flex w-screen h-screen justify-center items-center">
-        <p>You don't have the permission to access this page</p>
-      </div>
-    );
-  }
-
   useEffect(() => {
     let mounted = true;
     async function fetchSystemAlerts() {
@@ -47,6 +38,15 @@ const AlertsPage = () => {
       mounted = false;
     };
   }, [user]);
+
+  if (user === undefined) return <LoadingSpinner />;
+  if (user && user.role == "guest") {
+    return (
+      <div className="flex w-screen h-screen justify-center items-center">
+        <p>You don't have the permission to access this page</p>
+      </div>
+    );
+  }
 
   return (
     <div>

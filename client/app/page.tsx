@@ -5,7 +5,6 @@ import SearchBar from "@/components/SearchBar/SearchBar";
 import Header from "@/components/Header";
 import LoginRedirection from "@/components/LoginRedirection";
 import { useEffect, useState } from "react";
-import { createSocket, cleanSocket } from "@/lib/socket";
 import { useAuthStore } from "@/store/auth.store";
 import { BinPreview, useAllBins } from "@/hook/binHook";
 import LoadingSpinner from "@/components/LoadingSpinner/LoadingSpinner";
@@ -13,18 +12,6 @@ import axios from "axios";
 
 // Đây là trang dashboard
 export default function HomePage() {
-  // useEffect(() => {
-  //   const ws = createSocket();
-  //   ws.onmessage = (e) => {
-  //     const payload = JSON.parse(e.data);
-
-  //     // Kiểm tra id xem tin nhắn nhận được phải của mình không
-  //     if (payload.id === "button-fault-signal")
-  //       console.log("Thùng rác hư r thằng kia");
-  //   };
-
-  //   return () => cleanSocket(ws);
-  // }, []);
   const user = useAuthStore((state) => state.user);
 
   const [bins, setBins] = useState<BinPreview[]>([]);
@@ -42,7 +29,7 @@ export default function HomePage() {
 
   return (
     <>
-      {user && (
+      {/* {user && (
         <button
           onClick={async () => {
             const res = await axios.post(
@@ -54,7 +41,7 @@ export default function HomePage() {
               },
               {
                 headers: {
-                  "Access-Token": process.env.PUSHBULLET_TOKEN,
+                  "Access-Token": "o.gjOLgtA6LDh1MYdkf2hegBJX3xkG3TLR",
                   "Content-Type": "application/json",
                 },
               }
@@ -66,7 +53,7 @@ export default function HomePage() {
         >
           Click here to get pushed notification
         </button>
-      )}
+      )} */}
 
       <LoginRedirection />
       {user && (

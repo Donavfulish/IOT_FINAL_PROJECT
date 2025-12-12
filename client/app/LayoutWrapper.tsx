@@ -13,7 +13,6 @@ const LayoutWrapper = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <>
-      {/* {user?.role == "user" && <NotificationSetup userId={user.id} />} */}
       <FlowbiteInit />
       {children}
     </>

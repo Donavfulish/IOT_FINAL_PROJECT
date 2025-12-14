@@ -45,6 +45,7 @@ const getBinDetailById = async (id) => {
     led_mode: detail.led_mode,
     time_on_led: detail.time_on_led,
     time_off_led: detail.time_off_led,
+    is_led_on: detail.is_led_on,
     alerts: alerts.map((log) => {
       return {
         title: log.title,

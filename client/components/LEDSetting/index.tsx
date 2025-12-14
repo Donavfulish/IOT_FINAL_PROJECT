@@ -16,10 +16,12 @@ interface LEDSettingProps {
   mode: "auto" | "manual";
   startTime: string;
   endTime: string;
+  is_led_on: boolean;
   onSave: (
     mode: "auto" | "manual",
     start: string,
-    end: string
+    end: string,
+    isLedOn: boolean,
   ) => Promise<void>;
   isEditable?: boolean;
 }
@@ -28,6 +30,7 @@ const LEDSetting: React.FC<LEDSettingProps> = ({
   mode,
   startTime,
   endTime,
+  is_led_on,
   onSave,
   isEditable = false,
 }) => {
@@ -47,6 +50,7 @@ const LEDSetting: React.FC<LEDSettingProps> = ({
     setConfig((prev) => ({
       ...prev,
       ledMode: mode,
+      manualOn: is_led_on,
       startTime: startTime || "18:00",
       endTime: endTime || "06:00",
     }));
@@ -55,7 +59,7 @@ const LEDSetting: React.FC<LEDSettingProps> = ({
   async function handleSave() {
     setIsSaving(true);
     try {
-      await onSave(config.ledMode, config.startTime, config.endTime);
+      await onSave(config.ledMode, config.startTime, config.endTime, config.manualOn);
       setEditMode(false);
     } catch (error) {
       console.error(error);

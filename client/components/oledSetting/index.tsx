@@ -3,15 +3,15 @@
 import React, { useState, useEffect } from "react";
 import { MessageCircle } from "lucide-react";
 
-type LCDMode = "trash-level" | "message";
+type oledMode = "trash-level" | "message";
 interface Config {
-  lcdMode: LCDMode;
-  lcdMessage: string;
+  oledMode: oledMode;
+  oledMessage: string;
 }
 
 const maxCharacters = 160;
 
-interface LCDSettingProps {
+interface oledSettingProps {
   isDisplayFill: boolean;
   message: string;
   fillLevel: number;
@@ -19,7 +19,7 @@ interface LCDSettingProps {
   isEditable?: boolean;
 }
 
-const LCDSetting: React.FC<LCDSettingProps> = ({
+const OledSetting: React.FC<oledSettingProps> = ({
   isDisplayFill,
   message,
   fillLevel,
@@ -30,31 +30,31 @@ const LCDSetting: React.FC<LCDSettingProps> = ({
   const [isSaving, setIsSaving] = useState(false);
 
   const [config, setConfig] = useState<Config>({
-    lcdMode: isDisplayFill ? "trash-level" : "message",
-    lcdMessage: message || "",
+    oledMode: isDisplayFill ? "trash-level" : "message",
+    oledMessage: message || "",
   });
 
   useEffect(() => {
     setConfig({
-      lcdMode: isDisplayFill ? "trash-level" : "message",
-      lcdMessage: message || "",
+      oledMode: isDisplayFill ? "trash-level" : "message",
+      oledMessage: message || "",
     });
   }, [isDisplayFill, message]);
 
-  function handleLCDMessageChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
+  function handleoledMessageChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
     const newVal = e.target.value;
     if (newVal.length > maxCharacters) return;
-    setConfig((prev) => ({ ...prev, lcdMessage: newVal }));
+    setConfig((prev) => ({ ...prev, oledMessage: newVal }));
   }
 
   async function handleSave() {
     setIsSaving(true);
     try {
-      await onSave(config.lcdMessage, config.lcdMode === "trash-level");
+      await onSave(config.oledMessage, config.oledMode === "trash-level");
       setEditMode(false);
     } catch (error) {
       console.error("Save failed", error);
-      alert("Failed to save LCD settings.");
+      alert("Failed to save oled settings.");
     } finally {
       setIsSaving(false);
     }
@@ -62,8 +62,8 @@ const LCDSetting: React.FC<LCDSettingProps> = ({
 
   function handleCancelSave() {
     setConfig({
-      lcdMode: isDisplayFill ? "trash-level" : "message",
-      lcdMessage: message || "",
+      oledMode: isDisplayFill ? "trash-level" : "message",
+      oledMessage: message || "",
     });
     setEditMode(false);
   }
@@ -72,31 +72,31 @@ const LCDSetting: React.FC<LCDSettingProps> = ({
     <div className="card-primary flex flex-col gap-4 items-center">
       <div className="w-full flex flex-row gap-2 justify-baseline mb-2">
         <MessageCircle />
-        <p className="text-md font-medium">LCD Display</p>
+        <p className="text-md font-medium">oled Display</p>
       </div>
       <div className="w-full flex flex-col gap-4 items-center">
         {editMode && (
           <div className="w-full grid grid-cols-2 justify-center gap-2 text-sm">
             <button
               className={`p-1 rounded-md transition-colors ${
-                config.lcdMode === "trash-level"
+                config.oledMode === "trash-level"
                   ? "bg-[#00c2ff] text-black"
                   : "bg-[#1c2128] text-white"
               }`}
               onClick={() =>
-                setConfig((prev) => ({ ...prev, lcdMode: "trash-level" }))
+                setConfig((prev) => ({ ...prev, oledMode: "trash-level" }))
               }
             >
               Trash Level
             </button>
             <button
               className={`p-1 rounded-md transition-colors ${
-                config.lcdMode === "message"
+                config.oledMode === "message"
                   ? "bg-[#00c2ff] text-black"
                   : "bg-[#1c2128] text-white"
               }`}
               onClick={() =>
-                setConfig((prev) => ({ ...prev, lcdMode: "message" }))
+                setConfig((prev) => ({ ...prev, oledMode: "message" }))
               }
             >
               Message
@@ -105,24 +105,24 @@ const LCDSetting: React.FC<LCDSettingProps> = ({
         )}
 
         <div className="w-full">
-          {config.lcdMode === "trash-level" && (
+          {config.oledMode === "trash-level" && (
             <div className="w-full card-secondary h-30 flex flex-col items-center justify-center p-4 rounded-md bg-[#1c2128]">
               <span className="text-gray-400 text-sm mb-1">Current Fill</span>
               <p className="text-[#00c2ff] text-4xl font-bold">{fillLevel}%</p>
             </div>
           )}
-          {config.lcdMode === "message" && (
+          {config.oledMode === "message" && (
             <div className="flex flex-col items-start justify-center gap-2">
               <textarea
                 disabled={!editMode}
-                onChange={handleLCDMessageChange}
-                value={config.lcdMessage}
+                onChange={handleoledMessageChange}
+                value={config.oledMessage}
                 placeholder="Enter display message..."
                 className="w-full card-secondary h-30 p-2 rounded-md bg-[#1c2128] text-white resize-none focus:outline-none focus:ring-1 focus:ring-[#00c2ff]"
               />
               {editMode && (
                 <p className="text-sm text-gray-500">
-                  Characters: {config.lcdMessage.length} / {maxCharacters}
+                  Characters: {config.oledMessage.length} / {maxCharacters}
                 </p>
               )}
             </div>
@@ -162,4 +162,4 @@ const LCDSetting: React.FC<LCDSettingProps> = ({
   );
 };
 
-export default LCDSetting;
+export default OledSetting;

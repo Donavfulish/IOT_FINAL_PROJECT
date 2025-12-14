@@ -15,6 +15,7 @@ export type BinPreview = {
   led_mode: "auto" | "manual";
   time_on_led: string;
   time_off_led: string;
+  is_led_on: boolean;
 };
 
 export type BinDetailType = BinPreview & {

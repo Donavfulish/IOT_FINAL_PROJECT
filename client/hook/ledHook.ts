@@ -7,7 +7,7 @@ export const useUpdateLed = async (payload: {
     time_off_led: string;
 }) => {
     try {
-        const result = await api.patch(`api/device/led`, payload);
+        const result = await api.patch(`device/led`, payload);
         return result;
     } catch (error) {
         console.log("Error updating LED:", error);

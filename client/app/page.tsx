@@ -8,7 +8,6 @@ import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/auth.store";
 import { BinPreview, useAllBins } from "@/hook/binHook";
 import LoadingSpinner from "@/components/LoadingSpinner/LoadingSpinner";
-import axios from "axios";
 
 // Đây là trang dashboard
 export default function HomePage() {
@@ -85,7 +84,6 @@ export default function HomePage() {
                 <BinCard
                   key={bin.id}
                   binId={bin.id}
-                  status="OPERATIONAL"
                   fillLevel={bin.fill_level}
                   battery={bin.battery}
                   temperature={50}

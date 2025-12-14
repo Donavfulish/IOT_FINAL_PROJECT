@@ -91,6 +91,7 @@ const getOledMessage = async (req, res) => {
 };
 
 const updateOledMessage = async (req, res) => {
+    console.log(req);
   try {
     const { id, message } = req.body;
     const updateResult = await deviceServices.updateOledMessageService(
@@ -98,6 +99,7 @@ const updateOledMessage = async (req, res) => {
       message
     );
     const espResult = protocolServices.sendCommandToDevice("oled", message);
+    console.log(updateResult, espResult)
     res.json({
       ok: true,
       message: "update message sucess",

@@ -109,17 +109,18 @@ export default function BinDetailsPage() {
   const handleSaveLCD = async (message: string, isDisplayFill: boolean) => {
     if (!binDetail) return;
 
-    // 1. Update OLED Message
-    await useUpdateOled({
-      id: id,
-      message: message,
-    });
+    const messageToSend = isDisplayFill ? "RESET" : message;
 
-    //  Note: API 'useUpdateOled' hiện chỉ update message.
-    // await useUpdateBinConfig({ id, is_display_fill: isDisplayFill });
-
-    // Tạm thời refresh lại data để đồng bộ
-    await fetchBinDetail();
+try {
+      await useUpdateOled({
+        id: Number(id),
+        message: messageToSend,
+      });
+      
+      await fetchBinDetail();
+    } catch (error) {
+      console.error("Error updating OLED:", error);
+    }
   };
 
   const handleSaveLED = async (
@@ -129,14 +130,19 @@ export default function BinDetailsPage() {
   ) => {
     if (!binDetail) return;
 
-    // TODO: Hiện tại chưa có API hook update LED cụ thể
-    //  cần implement: await useUpdateLed({ id, mode, start, end });
-
-    console.log("Saving LED config:", { mode, start, end });
-    alert("API Update LED chưa được implement. Vui lòng kiểm tra lại hook.");
-
-    // Refresh data sau khi update
-    await fetchBinDetail();
+    try {
+      await useUpdateLed({ 
+        id: Number(id), 
+        led_mode: mode, 
+        time_on_led: start, 
+        time_off_led: end 
+      });
+      
+      await fetchBinDetail();
+    } catch (error) {
+      console.error("Error updating LED:", error);
+      alert("Failed to update LED settings.");
+    }
   };
 
   if (loading) {

@@ -5,8 +5,10 @@ import pushbulletServices from "./pushbullet.services.js";
 const sendFaultSignal = async (binId) => {
   if (!binId) return;
 
-  protocolServices.protocolServices.sendToFrontendBySocket({
+  protocolServices.sendToFrontendBySocket({
     id: "button-fault-signal",
+    message: "The bin may working unwantedly or under malfuncition",
+    type: "warning"
   });
 
   const logAndAlertPromises = [
@@ -43,6 +45,12 @@ const warningHighTemperature = async (binId, temp) => {
 
   // Nếu hiện tại cách alert gần nhất là 15 phút thì alert lần nữa
   if (!nearestTime || new Date() - new Date(nearestTime) > 15 * 60 * 1000) {
+    protocolServices.sendToFrontendBySocket({
+        id: 'event',
+        binId,
+        message: `High temperature possibly fire: ${temp} Celcius`,
+        type:  temp > 60 ?'danger' : 'warning',
+    })
     const promises = [
       createEventLogService(
         binId,
@@ -88,12 +96,14 @@ const getOledMessageService = async (id) => {
 
 const updateOledMessageService = async (id, message) => {
   try {
+    const display_fill = message === "RESET" ? true : false;
     const sql = `
                 UPDATE public.bins  
-                SET message = $2 
+                SET message = $2,
+                    is_display_fill = $3
                 WHERE id = $1
                 `;
-    const params = [id, message];
+    const params = [id, message, display_fill];
     const promises = [
       createEventLogService(
         id,

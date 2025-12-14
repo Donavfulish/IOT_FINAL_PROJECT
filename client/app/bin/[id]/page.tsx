@@ -68,10 +68,47 @@ export default function BinDetailsPage() {
             if (payload.id == "temp") {
                 console.log("temperature:", payload);
                 setNowTemp(payload.temp);
-            } else if (payload.id == "ultra") {
+            } else if (payload.id === "ultra") {
                 console.log("ws ultra:", payload);
-                setBinDetail((prev) => ({ ...prev!, fill_level: payload.fillLevel }));
+
+                setBinDetail(prev => {
+                    if (!prev) return prev;
+
+                    const newEvent =
+                        payload.fillLevel > 80
+                            ? [{
+                                message: payload.message,
+                                time_at: new Date(),
+                                type: payload.type,
+                            }]
+                            : [];
+
+                    return {
+                        ...prev,
+                        fill_level: payload.fillLevel,
+                        events: [
+                            ...newEvent,
+                            ...(prev.events ?? []),
+                        ],
+                    };
+                });
             }
+            else if (payload.id == "event" || payload.id == "button-fault-signal") {
+                console.log("event");
+                setBinDetail(prev =>
+                    prev ? {
+                        ...prev,
+                        events: [
+                            {
+                                message: payload.message,
+                                time_at: new Date(),
+                                type: payload.type,
+                            },
+                            ...prev.events,
+                        ],
+                    } : prev
+                );
+            } 
         };
 
         return () => cleanSocket(ws);
@@ -137,7 +174,7 @@ export default function BinDetailsPage() {
                 led_mode: mode,
                 time_on_led: start,
                 time_off_led: end,
-                is_led_on:  isLedOn
+                is_led_on: isLedOn
             });
 
             await fetchBinDetail();
@@ -194,14 +231,14 @@ export default function BinDetailsPage() {
                                                 >
                                                     <div
                                                         className={`w-2 h-2 rounded-full mt-2 shrink-0 ${event.type === 'warning'
-                                                                ? "bg-yellow-500"
-                                                                : event.type === 'danger'
-                                                                    ? "bg-red-500"
-                                                                    : "bg-green-500"
+                                                            ? "bg-yellow-500"
+                                                            : event.type === 'danger'
+                                                                ? "bg-red-500"
+                                                                : "bg-green-500"
                                                             }`}
                                                     ></div>
                                                     <div>
-                                                        <p className="text-sm font-medium text-foreground">
+                                                        <p className="text-sm font-medium text-foreground break-all line-clamp-2 pr-5">
                                                             {event.message}
                                                         </p>
                                                         <p className="text-xs text-muted-foreground">

@@ -72,7 +72,7 @@ const OledSetting: React.FC<oledSettingProps> = ({
     <div className="card-primary flex flex-col gap-4 items-center">
       <div className="w-full flex flex-row gap-2 justify-baseline mb-2">
         <MessageCircle />
-        <p className="text-md font-medium">oled Display</p>
+        <p className="text-md font-medium">OLED Display</p>
       </div>
       <div className="w-full flex flex-col gap-4 items-center">
         {editMode && (

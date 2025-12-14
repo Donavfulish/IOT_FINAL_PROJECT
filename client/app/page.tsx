@@ -8,7 +8,6 @@ import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/auth.store";
 import { BinPreview, useAllBins } from "@/hook/binHook";
 import LoadingSpinner from "@/components/LoadingSpinner/LoadingSpinner";
-import axios from "axios";
 
 // Đây là trang dashboard
 export default function HomePage() {
@@ -67,35 +66,31 @@ export default function HomePage() {
           </div>
           <div className="grid grid-cols-3">
             {bins.length == 0 && <LoadingSpinner />}
-            {bins?.length != 0 &&
-              bins
-                .filter((bin) => bin.id === user?.bin_id)
-                .map((bin) => (
-                  <BinCard
-                    key={bin.id}
-                    binId={bin.id}
-                    status="OPERATIONAL"
-                    fillLevel={bin.fill_level}
-                    battery={bin.battery}
-                    temperature={50}
-                    isManaged={true}
-                  />
-                ))}
+            {bins
+              .filter((bin) => bin.id === user?.bin_id)
+              .map((bin) => (
+                <BinCard
+                  key={bin.id}
+                  binId={bin.id}
+                  fillLevel={bin.fill_level}
+                  battery={bin.battery}
+                  temperature={50}
+                  isManaged={true}
+                />
+              ))}
 
-            {bins?.length != 0 &&
-              bins
-                .filter((bin) => bin.id !== user?.bin_id)
-                .sort((first, second) => first.fill_level - second.fill_level)
-                .map((bin) => (
-                  <BinCard
-                    key={bin.id}
-                    binId={bin.id}
-                    status="OPERATIONAL"
-                    fillLevel={bin.fill_level}
-                    battery={bin.battery}
-                    temperature={50}
-                  />
-                ))}
+            {bins
+              .filter((bin) => bin.id !== user?.bin_id)
+              .sort((first, second) => first.fill_level - second.fill_level)
+              .map((bin) => (
+                <BinCard
+                  key={bin.id}
+                  binId={bin.id}
+                  fillLevel={bin.fill_level}
+                  battery={bin.battery}
+                  temperature={50}
+                />
+              ))}
           </div>{" "}
         </>
       )}

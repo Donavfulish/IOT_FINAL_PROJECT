@@ -91,6 +91,7 @@ const getOledMessage = async (req, res) => {
 };
 
 const updateOledMessage = async (req, res) => {
+    console.log(req);
   try {
     const { id, message } = req.body;
     const updateResult = await deviceServices.updateOledMessageService(
@@ -98,6 +99,7 @@ const updateOledMessage = async (req, res) => {
       message
     );
     const espResult = protocolServices.sendCommandToDevice("oled", message);
+    console.log(updateResult, espResult)
     res.json({
       ok: true,
       message: "update message sucess",
@@ -111,19 +113,21 @@ const updateOledMessage = async (req, res) => {
 
 const updateLedConfig = async (req, res) => {
   try {
-    const { id, led_mode, time_on_led, time_off_led } = req.body;
+    const { id, led_mode, time_on_led, time_off_led, is_led_on } = req.body;
 
     const updateResult = await deviceServices.updateLedConfigService(
       id,
       led_mode,
       time_on_led,
-      time_off_led
+      time_off_led,
+      is_led_on,
     );
 
     const mqttPayload = {
       mode: led_mode,
       start: time_on_led,
       end: time_off_led,
+      isOn: is_led_on
     };
 
     const espResult = protocolServices.sendCommandToDevice("led", mqttPayload);

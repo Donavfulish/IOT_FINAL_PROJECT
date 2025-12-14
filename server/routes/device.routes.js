@@ -11,6 +11,5 @@ router.patch("/led", deviceControllers.updateLedConfig);
 router.get("/temp/:id/hour", deviceControllers.getTempInOneHour);
 router.get("/event-log/:id", deviceControllers.getEventLogs);
 router.get("/system-alert/:id", deviceControllers.getSystemAlerts);
-router.patch("/oled", deviceControllers.updateOledMessage);
 
 export default router;

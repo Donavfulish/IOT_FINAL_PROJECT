@@ -27,12 +27,20 @@ const getBinDetailById = async (id) => {
     ORDER BY TIME_AT DESC
   `;
 
-  const promises = [pool.query(detailSql, [id]), pool.query(alertsSql, [id])];
-  const [detailResult, alertsResult] = await Promise.all(promises);
+  const eventsSql = `
+    SELECT *
+    FROM event_logs
+    WHERE BIN_ID = $1
+    ORDER BY TIME_AT DESC
+  `;
 
-  const [detail, alerts] = [
+  const promises = [pool.query(detailSql, [id]), pool.query(alertsSql, [id]), pool.query(eventsSql, [id])];
+  const [detailResult, alertsResult, eventsResult] = await Promise.all(promises);
+
+  const [detail, alerts, events] = [
     detailResult.rows?.[0] || null,
     alertsResult.rows || [],
+    eventsResult.rows || [],
   ];
   if (!detail) return {};
 
@@ -45,11 +53,20 @@ const getBinDetailById = async (id) => {
     led_mode: detail.led_mode,
     time_on_led: detail.time_on_led,
     time_off_led: detail.time_off_led,
+    is_led_on: detail.is_led_on,
     alerts: alerts.map((log) => {
       return {
         title: log.title,
         message: log.message,
         time_at: log.time_at,
+        type: log.type,
+      };
+    }),
+    events: events.map((log) => {
+      return {
+        message: log.message,
+        time_at: log.time_at,
+        type: log.type,
       };
     }),
   };

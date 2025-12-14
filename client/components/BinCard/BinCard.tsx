@@ -4,7 +4,6 @@ import Link from "next/link";
 
 interface BinData {
   binId: number;
-  status: "OPERATIONAL" | "WARNING" | "FULL" | "MAINTENANCE";
   fillLevel: number;
   battery: number;
   temperature: number;
@@ -13,35 +12,11 @@ interface BinData {
 
 const BinCard = ({
   binId,
-  status,
   fillLevel,
   battery,
   temperature,
   isManaged = false,
 }: BinData) => {
-  // Mock data cho thùng rác
-  // const binData: BinData = {
-  //   binId: 1,
-  //   status: "OPERATIONAL",
-  //   fillLevel: 45,
-  //   battery: 85,
-  //   temperature: 28,
-  // };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "OPERATIONAL":
-        return "bg-emerald-500/20 text-emerald-400 border-emerald-500/30";
-      case "WARNING":
-        return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
-      case "FULL":
-        return "bg-red-500/20 text-red-400 border-red-500/30";
-      case "MAINTENANCE":
-        return "bg-gray-500/20 text-gray-400 border-gray-500/30";
-      default:
-        return "bg-gray-500/20 text-gray-400 border-gray-500/30";
-    }
-  };
 
   const getFillLevelColor = (level: number) => {
     if (level < 50) return "bg-emerald-400";
@@ -72,15 +47,6 @@ const BinCard = ({
           <h2 className="text-3xl font-bold text-white tracking-wide">
             {binId}
           </h2>
-          <div
-            className={`px-6 py-2 rounded-full border ${getStatusColor(
-              status
-            )}`}
-          >
-            <span className="text-sm font-semibold tracking-wider">
-              {status}
-            </span>
-          </div>
         </Link>
 
         {/* Fill Level Section */}

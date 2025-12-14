@@ -71,7 +71,6 @@ export default function HomePage() {
                 <BinCard
                   key={bin.id}
                   binId={bin.id}
-                  status="OPERATIONAL"
                   fillLevel={bin.fill_level}
                   battery={bin.battery}
                   temperature={50}

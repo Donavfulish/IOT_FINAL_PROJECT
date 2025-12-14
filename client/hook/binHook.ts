@@ -4,7 +4,15 @@ export type AlertType = {
   title: string;
   message: string;
   time_at: Date;
+  type: 'warning' | 'info' | 'danger'
 };
+
+export type EventType = {
+  message: string;
+  time_at: Date;
+  type: 'warning' | 'info' | 'danger'
+};
+
 
 export type BinPreview = {
   id: number;
@@ -20,6 +28,7 @@ export type BinPreview = {
 
 export type BinDetailType = BinPreview & {
   alerts: AlertType[];
+  events: EventType[];
 };
 
 export const useAllBins = async (): Promise<BinPreview[] | undefined> => {

@@ -187,25 +187,25 @@ export default function BinDetailsPage() {
                                 <CardContent>
                                     <div className="space-y-3 max-h-100 overflow-y-auto">
                                         {binDetail.alerts && binDetail.alerts.length > 0 ? (
-                                            binDetail.alerts.map((alert, index) => (
+                                            binDetail.events.map((event, index) => (
                                                 <div
                                                     key={index}
                                                     className="flex gap-3 pb-3 border-b border-border/30 last:border-0"
                                                 >
                                                     <div
-                                                        className={`w-2 h-2 rounded-full mt-2 shrink-0 ${alert.title.toLowerCase().includes("warning")
+                                                        className={`w-2 h-2 rounded-full mt-2 shrink-0 ${event.type === 'warning'
                                                                 ? "bg-yellow-500"
-                                                                : alert.title.toLowerCase().includes("critical")
+                                                                : event.type === 'danger'
                                                                     ? "bg-red-500"
                                                                     : "bg-green-500"
                                                             }`}
                                                     ></div>
                                                     <div>
                                                         <p className="text-sm font-medium text-foreground">
-                                                            {alert.title}: {alert.message}
+                                                            {event.message}
                                                         </p>
                                                         <p className="text-xs text-muted-foreground">
-                                                            {new Date(alert.time_at).toLocaleString()}
+                                                            {new Date(event.time_at).toLocaleString()}
                                                         </p>
                                                     </div>
                                                 </div>

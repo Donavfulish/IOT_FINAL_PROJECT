@@ -10,7 +10,7 @@ const sendFaultSignal = async (binId) => {
   });
 
   const logAndAlertPromises = [
-    createEventLogService(binId, `Device malfunction or unwanted working`),
+    createEventLogService(binId, `Device malfunction or unwanted working`, 'warning'),
     createSystemAlertService(
       binId,
       "Device malfunction",
@@ -46,7 +46,8 @@ const warningHighTemperature = async (binId, temp) => {
     const promises = [
       createEventLogService(
         binId,
-        `High temperature possibly fire: ${temp} Celcius`
+        `High temperature possibly fire: ${temp} Celcius`,
+        temp > 60 ?'danger' : 'warning',
       ),
       createSystemAlertService(
         binId,
@@ -93,8 +94,17 @@ const updateOledMessageService = async (id, message) => {
                 WHERE id = $1
                 `;
     const params = [id, message];
+    const promises = [
+      createEventLogService(
+        id,
+        message === 'RESET' ? 'Update Oled. Oled now display fill level' : `Update Oled. Oled message now is: "${message}"`,
+        'info',
+      ),
+      pool.query(sql, params)
+    ];
+    const [events, result] = await Promise.all(promises);
 
-    return (await pool.query(sql, params)).rows[0];
+    return result.rows[0];
   } catch (error) {
     console.log(error);
   }
@@ -172,14 +182,14 @@ const getEventLogService = async (id) => {
   }
 };
 
-const createEventLogService = async (id, message) => {
+const createEventLogService = async (id, message, type) => {
   try {
     console.log(message);
     const sql = `
-                  INSERT INTO public.event_logs (bin_id, message, time_at)
-                  VALUES($1 ,$2 , NOW())
+                  INSERT INTO public.event_logs (bin_id, message, time_at, type)
+                  VALUES($1 ,$2 , NOW(), $3)
                   `;
-    const params = [id, message];
+    const params = [id, message, type];
     const result = await pool.query(sql, params);
     return result.rows[0];
   } catch (error) {
@@ -233,7 +243,19 @@ const updateLedConfigService = async (
         RETURNING *
     `;
     const params = [id, led_mode, time_on_led, time_off_led, is_led_on];
-    return (await pool.query(sql, params)).rows[0];
+    const promises = [
+      createEventLogService(
+        id,
+        led_mode === 'manual' 
+            ? `Update Led: Led mode is manual, led mode is ${is_led_on === true ? 'On' : 'Off'}` 
+            : `Update Led. Led mode is auto. Led is on from ${time_on_led} to ${time_off_led}`,
+        'info',
+      ),
+      pool.query(sql, params)
+    ];
+    const [events, result] = await Promise.all(promises);
+    
+    return result.rows[0];
   } catch (error) {
     console.log(error);
     throw error;

@@ -2,81 +2,51 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { Search } from "lucide-react";
-
-interface Bin {
-  id: string;
-  name: string;
-  status: "operational" | "warning" | "critical";
-  fillLevel: number;
-  battery: number;
-  temperature: number;
-  lastUpdated: string;
-}
+import { Battery, Droplet, Search } from "lucide-react";
+import { BinPreview } from "@/hook/binHook";
 
 interface BinSearchBarProps {
-  bins?: Bin[];
+  bins: BinPreview[];
 }
 
-// Mock data mặc định
-const mockBins: Bin[] = [
-  {
-    id: "BIN-76623",
-    name: "Bin 76623",
-    status: "operational",
-    fillLevel: 45,
-    battery: 85,
-    temperature: 28,
-    lastUpdated: "2025-11-03 09:12:00Z",
-  },
-  {
-    id: "BIN-88901",
-    name: "Bin 88901",
-    status: "warning",
-    fillLevel: 78,
-    battery: 35,
-    temperature: 32,
-    lastUpdated: "2025-11-03 08:00:00Z",
-  },
-  {
-    id: "BIN-34567",
-    name: "Bin 34567",
-    status: "critical",
-    fillLevel: 95,
-    battery: 12,
-    temperature: 35,
-    lastUpdated: "2025-11-03 07:15:00Z",
-  },
-  {
-    id: "BIN-45678",
-    name: "Bin 45678",
-    status: "operational",
-    fillLevel: 32,
-    battery: 92,
-    temperature: 26,
-    lastUpdated: "2025-11-03 09:00:00Z",
-  },
-  {
-    id: "BIN-12345",
-    name: "Bin 12345",
-    status: "operational",
-    fillLevel: 55,
-    battery: 78,
-    temperature: 27,
-    lastUpdated: "2025-11-03 08:45:00Z",
-  },
-  {
-    id: "BIN-98765",
-    name: "Bin 98765",
-    status: "warning",
-    fillLevel: 82,
-    battery: 45,
-    temperature: 31,
-    lastUpdated: "2025-11-03 08:30:00Z",
-  },
-];
+interface StatItemProps {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  percentage: number;
+  color: string;
+}
 
-export default function SearchBar({ bins = mockBins }: BinSearchBarProps) {
+const StatItem: React.FC<StatItemProps> = ({
+  icon,
+  label,
+  value,
+  percentage,
+  color,
+}) => {
+  return (
+    <div className="relative">
+      <div className="flex items-center gap-2 mb-3">
+        <div className="text-gray-400">{icon}</div>
+        <span className="text-gray-400 text-sm">{label}</span>
+      </div>
+      <div className="w-full bg-gray-800 rounded-full h-2 mb-3 overflow-hidden">
+        <div
+          className="h-full rounded-full transition-all duration-500"
+          style={{
+            width: `${percentage}%`,
+            backgroundColor: color,
+          }}
+        />
+      </div>
+      <div className="absolute top-0 right-2 text-2xl font-bold text-white">
+        {value}
+      </div>
+    </div>
+  );
+};
+
+export default function SearchBar({ bins }: BinSearchBarProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
@@ -95,10 +65,8 @@ export default function SearchBar({ bins = mockBins }: BinSearchBarProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const filteredBins = bins.filter(
-    (bin) =>
-      bin.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      bin.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredBins = bins.filter((bin) =>
+    String(bin.id).includes(searchQuery.toLowerCase())
   );
 
   const getStatusColor = (status: string) => {
@@ -144,36 +112,39 @@ export default function SearchBar({ bins = mockBins }: BinSearchBarProps) {
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-foreground truncate">
-                        {bin.id}
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {bin.name}
+                      <p className="font-semibold text-lg truncate">
+                        ID-{bin.id}
                       </p>
                     </div>
-                    <div className="text-right">
-                      <span
-                        className={`inline-block px-2 py-1 rounded-md text-xs font-semibold border ${getStatusColor(
-                          bin.status
-                        )}`}
-                      >
-                        {bin.status === "operational" ? "✓" : "!"}
-                      </span>
-                    </div>
+                    <div className="text-right"></div>
                   </div>
-                  <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
-                    <div>
+                  <div className="mt-2 grid grid-cols-2 gap-10 text-xs">
+                    {/* <div>
                       <span className="text-muted-foreground">Fill Level:</span>
-                      <p className="font-semibold text-foreground">
-                        {bin.fillLevel}%
+                      <p className="font-semibold text-green-600 text-lg">
+                        {bin.fill_level}%
                       </p>
                     </div>
                     <div>
                       <span className="text-muted-foreground">Battery:</span>
-                      <p className="font-semibold text-foreground">
+                      <p className="font-semibold text-cyan-400 text-lg">
                         {bin.battery}%
                       </p>
-                    </div>
+                    </div> */}
+                    <StatItem
+                      icon={<Battery className="w-5 h-5" />}
+                      label="Battery Level"
+                      value={`${bin.battery}%`}
+                      percentage={bin.battery}
+                      color={bin.battery < 20 ? "#ef4444" : "#10b981"}
+                    />
+                    <StatItem
+                      icon={<Droplet className="w-5 h-5" />}
+                      label="Fill Level"
+                      value={`${bin.fill_level}%`}
+                      percentage={bin.fill_level}
+                      color={bin.fill_level > 80 ? "#ef4444" : "#06b6d4"}
+                    />
                   </div>
                 </Link>
               ))

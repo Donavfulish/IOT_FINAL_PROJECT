@@ -17,26 +17,32 @@ const handleReceivingMqttMessage = async (binId, device, data) => {
       await deviceServices.sendFaultSignal(binId);
   }
   if (device === "ultra") {
-    console.log("ultra:", data);
     protocolServices.sendToFrontendBySocket({
       id: "ultra",
       fillLevel: data,
     });
-    deviceServices.updateFillLevelService(binId, data);
+    await deviceServices.updateFillLevelService(binId, data);
     if (data == 100) {
-      deviceServices.createEventLogService(binId, "The smart bin is full");
-      deviceServices.createSystemAlertService(
+      await deviceServices.createEventLogService(
         binId,
-        `BIN-${binId}: Fill level is full`,
+        "The smart bin is full"
+      );
+      await deviceServices.createSystemAlertService(
+        binId,
+        `Fill level is full`,
         "Fill Level: 100% - Critical Threshold Exceeded",
         "warning"
       );
-      sendMail("Smart Bin", `Your bin (${binId}) has been fulled!`, "nmluan23@clc.fitus.edu.vn");
+      await sendMail(
+        "Smart Bin",
+        "Thùng rác đầy rồi",
+        "nmluan23@clc.fitus.edu.vn"
+      );
       deviceServices.sendFillLevel(data);
     }
   }
   if (device === "temp") {
-    deviceServices.createTempHistoryService(binId, data);
+    await deviceServices.createTempHistoryService(binId, data);
     deviceServices.sendTemp(data);
     if (data > 50) await deviceServices.warningHighTemperature(binId, data);
   }

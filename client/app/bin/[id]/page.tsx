@@ -46,7 +46,7 @@ export default function BinDetailsPage() {
           setTempHour(data.result ?? []);
           setNowTemp(
             data.result.reduce((max: Temp, item: Temp) =>
-              item.temp > max.temp ? item : max
+              item.time > max.time ? item : max
             ).temp
           );
         }
@@ -154,6 +154,7 @@ export default function BinDetailsPage() {
       </div>
     );
   }
+
   return (
     <>
       <LoginRedirection />
@@ -218,7 +219,7 @@ export default function BinDetailsPage() {
               <QuickStatus
                 battery={binDetail.battery}
                 fillLevel={binDetail.fill_level}
-                temperature={nowTemp}
+                temperature={Number(nowTemp)}
               />
 
               {/* API-connected LCD Setting */}

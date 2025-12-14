@@ -1,5 +1,6 @@
 import React from "react";
 interface Alert {
+  bin_id: number;
   title: string;
   message: string;
   time_at: string;
@@ -90,10 +91,13 @@ export const AlertItem = ({ alert }: Props) => {
       <div className="mt-1">{color.icon}</div>
       <div className="flex-1 min-w-0">
         <h4 className="font-semibold text-white transition-colors">
-          {alert.title}
+          BIN-
+          {alert.bin_id}: {alert.title}
         </h4>
         <p className="text-sm text-[#8B949E] mt-1">{alert.message}</p>
-        <p className="text-xs text-[#8B949E]  mt-2">{alert.time_at}</p>
+        <p className="text-xs text-[#8B949E]  mt-2">
+          {new Date(alert.time_at).toLocaleString()}
+        </p>
       </div>
     </div>
   );

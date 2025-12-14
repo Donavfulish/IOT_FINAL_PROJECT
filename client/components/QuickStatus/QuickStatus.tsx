@@ -65,8 +65,8 @@ const QuickStatus: React.FC<QuickStatusProps> = ({
           icon={<Thermometer className="w-5 h-5" />}
           label="Current Temperature"
           value={`${temperature} °C`}
-          percentage={0}
-          color="transparent"
+          percentage={temperature}
+          color={temperature > 50 ? "#ef4444" : "#06b6d4"}
         />
 
         <StatItem

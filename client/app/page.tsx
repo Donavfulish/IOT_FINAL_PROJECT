@@ -30,32 +30,6 @@ export default function HomePage() {
 
   return (
     <>
-      {/* {user && (
-        <button
-          onClick={async () => {
-            const res = await axios.post(
-              "https://api.pushbullet.com/v2/pushes",
-              {
-                type: "note",
-                title: "Title",
-                body: "Body",
-              },
-              {
-                headers: {
-                  "Access-Token": "o.gjOLgtA6LDh1MYdkf2hegBJX3xkG3TLR",
-                  "Content-Type": "application/json",
-                },
-              }
-            );
-            console.log("Push sent:", res.data);
-            return res.data;
-          }}
-          className="w-100 h-100 border border-gray-200 bg-blue-200/80"
-        >
-          Click here to get pushed notification
-        </button>
-      )} */}
-
       <LoginRedirection />
       {user && (
         <>

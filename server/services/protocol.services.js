@@ -4,9 +4,6 @@ import { ws } from "../config/websocket.js";
 
 const TOPIC_PUBLISH = "044153414/smartbin/web";
 
-/**
- * Send command from controller or WS to ESP via MQTT
- */
 const sendCommandToDevice = (device, command) => {
   if (!mqttClient || !ws) throw new Error("MQTT or WS not initialized");
 
@@ -23,13 +20,6 @@ const sendCommandToDevice = (device, command) => {
   return { sent: true, command };
 };
 
-/**
- * Send data to Frontend realtime by SocketIO
- * Payload Schema: {
- *    id: string,
- *    ...
- * }
- */
 const sendToFrontendBySocket = (payload) => {
   if (!ws) return;
 

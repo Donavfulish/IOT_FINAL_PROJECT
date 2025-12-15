@@ -1,5 +1,20 @@
 import pool from "../config/db.js";
 
+const getBinManagers = async (binId) => {
+  const sql = `
+    SELECT *
+    FROM USERS
+    WHERE bin_id = $1
+  `;
+  const result = (await pool.query(sql, [binId])).rows;
+  return result.map((item) => {
+    return {
+      id: item.id,
+      email: item.email,
+    };
+  });
+};
+
 const loginUserAndGet = async (loginPayload) => {
   const { email, password } = loginPayload;
   const sql = `
@@ -97,4 +112,9 @@ const getManagedBinId = async (userId) => {
   return binId;
 };
 
-export default { loginUserAndGet, registerUserAndGet, getManagedBinId };
+export default {
+  getBinManagers,
+  loginUserAndGet,
+  registerUserAndGet,
+  getManagedBinId,
+};

@@ -8,11 +8,15 @@ const sendFaultSignal = async (binId) => {
   protocolServices.sendToFrontendBySocket({
     id: "button-fault-signal",
     message: "The bin may working unwantedly or under malfuncition",
-    type: "warning"
+    type: "warning",
   });
 
   const logAndAlertPromises = [
-    createEventLogService(binId, `Device malfunction or unwanted working`, 'warning'),
+    createEventLogService(
+      binId,
+      `The bin may working unwantedly or under malfuncition`,
+      "warning"
+    ),
     createSystemAlertService(
       binId,
       "Device malfunction",
@@ -46,16 +50,16 @@ const warningHighTemperature = async (binId, temp) => {
   // Nếu hiện tại cách alert gần nhất là 15 phút thì alert lần nữa
   if (!nearestTime || new Date() - new Date(nearestTime) > 15 * 60 * 1000) {
     protocolServices.sendToFrontendBySocket({
-        id: 'event',
-        binId,
-        message: `High temperature possibly fire: ${temp} Celcius`,
-        type:  temp > 60 ?'danger' : 'warning',
-    })
+      id: "event",
+      binId,
+      message: `High temperature possibly fire: ${temp} Celcius`,
+      type: temp > 60 ? "danger" : "warning",
+    });
     const promises = [
       createEventLogService(
         binId,
         `High temperature possibly fire: ${temp} Celcius`,
-        temp > 60 ?'danger' : 'warning',
+        temp > 60 ? "danger" : "warning"
       ),
       createSystemAlertService(
         binId,
@@ -107,10 +111,12 @@ const updateOledMessageService = async (id, message) => {
     const promises = [
       createEventLogService(
         id,
-        message === 'RESET' ? 'Update Oled. Oled now display fill level' : `Update Oled. Oled message now is: "${message}"`,
-        'info',
+        message === "RESET"
+          ? "Update Oled. Oled now display fill level"
+          : `Update Oled. Oled message now is: "${message}"`,
+        "info"
       ),
-      pool.query(sql, params)
+      pool.query(sql, params),
     ];
     const [events, result] = await Promise.all(promises);
 
@@ -151,13 +157,19 @@ const getTempInOneHourService = async (id) => {
 
 const createTempHistoryService = async (id, nowTemp) => {
   try {
-    const sql = `
+    const deleteExpiredSql = `
+                  DELETE FROM public.bin_histories
+                  WHERE bin_id = $1 AND NOW() - time_at > INTERVAL '1.5 hours'
+    `;
+    await pool.query(deleteExpiredSql, [id]);
+
+    const insertSql = `
                   INSERT INTO public.bin_histories (bin_id, temperature, time_at)
                   VALUES($1 ,$2 , NOW() )
                   `;
     const params = [id, nowTemp];
 
-    return (await pool.query(sql, params)).rows[0];
+    return (await pool.query(insertSql, params)).rows[0];
   } catch (error) {
     console.log(error);
   }
@@ -256,15 +268,17 @@ const updateLedConfigService = async (
     const promises = [
       createEventLogService(
         id,
-        led_mode === 'manual' 
-            ? `Update Led: Led mode is manual, led mode is ${is_led_on === true ? 'On' : 'Off'}` 
-            : `Update Led. Led mode is auto. Led is on from ${time_on_led} to ${time_off_led}`,
-        'info',
+        led_mode === "manual"
+          ? `Update Led: Led mode is manual, led mode is ${
+              is_led_on === true ? "On" : "Off"
+            }`
+          : `Update Led. Led mode is auto. Led is on from ${time_on_led} to ${time_off_led}`,
+        "info"
       ),
-      pool.query(sql, params)
+      pool.query(sql, params),
     ];
     const [events, result] = await Promise.all(promises);
-    
+
     return result.rows[0];
   } catch (error) {
     console.log(error);

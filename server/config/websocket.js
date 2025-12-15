@@ -2,7 +2,6 @@ import WebSocket from "ws";
 
 export let ws = null;
 
-/* eslint-disable no-console */
 export function initWebSocket(server) {
   ws = new WebSocket.Server({ server });
   ws.on("close", (code, reason) => {

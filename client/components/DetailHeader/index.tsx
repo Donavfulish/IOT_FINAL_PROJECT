@@ -1,8 +1,9 @@
 import Link from "next/link";
 import React from "react";
 import { ArrowLeft } from "lucide-react";
+import { BinDetailType } from "@/hook/binHook";
 
-const DetailHeader = () => {
+const DetailHeader = ({ bin }: { bin: BinDetailType }) => {
   return (
     <div className="z-100 sticky top-0 flex flex-col gap-2 justify-between items-baseline bg-gray-800/60 backdrop-blur-sm border-b border-b-gray-700 pt-5 pb-4 px-10 select-none">
       <Link
@@ -13,10 +14,7 @@ const DetailHeader = () => {
         Back to dashboard
       </Link>
       <div className="flex flex-col gap-1">
-        <h1 className="text-white text-3xl font-bold">ID: 34567</h1>
-        <p className="text-gray-400 text-sm">
-          Last updated: 24/11/2025 19:00:00
-        </p>
+        <h1 className="text-white text-3xl font-bold">ID: {bin.id}</h1>
       </div>
     </div>
   );

@@ -6,7 +6,6 @@ export const api = axios.create({
   timeout: 10000,
 });
 
-// Interceptor để thêm header user
 api.interceptors.request.use((config) => {
   const user = useAuthStore.getState().user; // lấy state trực tiếp, không dùng hook
   if (user) {

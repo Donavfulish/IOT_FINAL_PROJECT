@@ -91,7 +91,7 @@ export default function SearchBar({ bins }: BinSearchBarProps) {
         />
         <input
           type="text"
-          placeholder="Search bins by ID or name..."
+          placeholder="Search bins by ID"
           value={searchQuery}
           onChange={(e) => {
             setSearchQuery(e.target.value);

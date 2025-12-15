@@ -1,6 +1,7 @@
 import protocolServices from "../services/protocol.services.js";
 import deviceServices from "../services/device.services.js";
 import { sendMail } from "../services/email.services.js";
+import userServices from "../services/user.services.js";
 
 const handleReceivingMqttMessage = async (binId, device, data) => {
   if (!binId)
@@ -23,21 +24,18 @@ const handleReceivingMqttMessage = async (binId, device, data) => {
     });
     await deviceServices.updateFillLevelService(binId, data);
     if (data == 100) {
-      await deviceServices.createEventLogService(
-        binId,
-        "The smart bin is full"
-      );
+      await deviceServices.createEventLogService(binId, "The bin is full");
       await deviceServices.createSystemAlertService(
         binId,
         `Fill level is full`,
         "Fill Level: 100% - Critical Threshold Exceeded",
         "warning"
       );
-      await sendMail(
-        "Smart Bin",
-        "Thùng rác đầy rồi",
-        "nmluan23@clc.fitus.edu.vn"
+      const managers = await userServices.getBinManagers(binId);
+      const sendMailPromises = managers.map((user) =>
+        sendMail("Smart Bin", `Your bin (ID-${binId}) is full`, user.email)
       );
+      await Promise.all(sendMailPromises);
       deviceServices.sendFillLevel(data);
     }
   }
@@ -91,7 +89,7 @@ const getOledMessage = async (req, res) => {
 };
 
 const updateOledMessage = async (req, res) => {
-    console.log(req);
+  console.log(req);
   try {
     const { id, message } = req.body;
     const updateResult = await deviceServices.updateOledMessageService(
@@ -99,7 +97,7 @@ const updateOledMessage = async (req, res) => {
       message
     );
     const espResult = protocolServices.sendCommandToDevice("oled", message);
-    console.log(updateResult, espResult)
+    console.log(updateResult, espResult);
     res.json({
       ok: true,
       message: "update message sucess",
@@ -120,14 +118,14 @@ const updateLedConfig = async (req, res) => {
       led_mode,
       time_on_led,
       time_off_led,
-      is_led_on,
+      is_led_on
     );
 
     const mqttPayload = {
       mode: led_mode,
       start: time_on_led,
       end: time_off_led,
-      isOn: is_led_on
+      isOn: is_led_on,
     };
 
     const espResult = protocolServices.sendCommandToDevice("led", mqttPayload);

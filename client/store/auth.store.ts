@@ -1,4 +1,3 @@
-import { api } from "@/lib/axios";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware"; // 👈 Import persist
 

@@ -68,29 +68,6 @@ export default function BinDetailsPage() {
       if (payload.id == "temp") {
         console.log("temperature:", payload);
         setNowTemp(payload.temp);
-      } else if (payload.id === "ultra") {
-        console.log("ws ultra:", payload);
-
-        setBinDetail((prev) => {
-          if (!prev) return prev;
-
-          const newEvent =
-            payload.fillLevel > 80
-              ? [
-                  {
-                    message: payload.message,
-                    time_at: new Date(),
-                    type: payload.type,
-                  },
-                ]
-              : [];
-
-          return {
-            ...prev,
-            fill_level: payload.fillLevel,
-            events: [...newEvent, ...(prev.events ?? [])],
-          };
-        });
       } else if (payload.id == "event" || payload.id == "button-fault-signal") {
         console.log("event");
         setBinDetail((prev) =>
@@ -102,6 +79,22 @@ export default function BinDetailsPage() {
                     message: payload.message,
                     time_at: new Date(),
                     type: payload.type,
+                  },
+                  ...prev.events,
+                ],
+              }
+            : prev
+        );
+      } else if (payload.id == "fill_level") {
+        setBinDetail((prev) =>
+          prev
+            ? {
+                ...prev,
+                events: [
+                  {
+                    message: 'The bin is full',
+                    time_at: new Date(),
+                    type: 'danger',
                   },
                   ...prev.events,
                 ],

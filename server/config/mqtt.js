@@ -5,7 +5,6 @@ const TOPIC_SUBSCRIBE = "044153414/smartbin/device";
 const clientId = "mqtt_backend_" + process.pid;
 const mqttClient = mqtt.connect("mqtt://test.mosquitto.org", {
   clientId: clientId,
-  clean: true, // Xóa session cũ và đăng ký lại
   reconnectPeriod: 5000, // Thử kết nối lại sau 5 giây nếu bị mất kết nối
 }); //mqtt://test.mosquitto.org || mqtt://broker.hivemq.com
 
@@ -31,6 +30,7 @@ mqttClient.on("message", (topic, message) => {
   console.log("MQTT Received:", topic);
   const device = topic.split("/").pop();
 
+  // "[binID]/[message]"
   const payloadElements = message.toString().split("/");
   const binId = parseInt(payloadElements[0]);
   const data = payloadElements[1];

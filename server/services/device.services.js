@@ -7,20 +7,20 @@ const sendFaultSignal = async (binId) => {
 
   protocolServices.sendToFrontendBySocket({
     id: "button-fault-signal",
-    message: "The bin may working unwantedly or under malfuncition",
+    message: "The bin may work unwantedly or under malfuncition",
     type: "warning",
   });
 
   const logAndAlertPromises = [
     createEventLogService(
       binId,
-      `The bin may working unwantedly or under malfuncition`,
+      `The bin may work unwantedly or under malfuncition`,
       "warning"
     ),
     createSystemAlertService(
       binId,
       "Device malfunction",
-      "The bin may working unwantedly or under malfuncition",
+      "The bin may work unwantedly or under malfuncition",
       "warning"
     ),
   ];
@@ -101,13 +101,17 @@ const getOledMessageService = async (id) => {
 const updateOledMessageService = async (id, message) => {
   try {
     const display_fill = message === "RESET" ? true : false;
-    const sql = `
+    const sql = message !== "RESET" ? `
                 UPDATE public.bins  
                 SET message = $2,
                     is_display_fill = $3
                 WHERE id = $1
-                `;
-    const params = [id, message, display_fill];
+                ` : `
+                UPDATE public.bins  
+                SET is_display_fill = $1
+                WHERE id = $2
+                ` ;
+    const params = message !== "RESET" ? [id, message, display_fill] : [display_fill, id];
     const promises = [
       createEventLogService(
         id,

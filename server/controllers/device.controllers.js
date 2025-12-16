@@ -24,7 +24,11 @@ const handleReceivingMqttMessage = async (binId, device, data) => {
     });
     await deviceServices.updateFillLevelService(binId, data);
     if (data == 100) {
-      await deviceServices.createEventLogService(binId, "The bin is full");
+      await deviceServices.createEventLogService(
+        binId,
+        "The bin is full",
+        "danger"
+      );
       await deviceServices.createSystemAlertService(
         binId,
         `Fill level is full`,

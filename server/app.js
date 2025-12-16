@@ -4,10 +4,6 @@ import deviceRouter from "./routes/device.routes.js";
 import userRouter from "./routes/user.routes.js";
 import binRouter from "./routes/bin.routes.js";
 import bodyParser from "body-parser";
-import { createRequire } from "module";
-
-// 💡 Tạo hàm require cục bộ
-const require = createRequire(import.meta.url);
 
 const app = express();
 

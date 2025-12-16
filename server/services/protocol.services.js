@@ -9,15 +9,6 @@ const sendCommandToDevice = (device, command) => {
 
   const payload = JSON.stringify(command);
   mqttClient.publish(`${TOPIC_PUBLISH}/${device}`, payload);
-
-  // Broadcast to all FE via WS
-  ws.clients.forEach((client) => {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify({ event: "command_sent", command }));
-    }
-  });
-
-  return { sent: true, command };
 };
 
 const sendToFrontendBySocket = (payload) => {

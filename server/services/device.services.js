@@ -136,6 +136,7 @@ const getTempInOneHourService = async (id) => {
                 SELECT b.temperature as temp, (b.time_at + INTERVAL '7 hours') as time
                 FROM public.bin_histories as b
                 WHERE b.bin_id = $1 AND time_at >= NOW() - INTERVAL '1 hour'
+                ORDER BY b.time_at ASC
                   `;
     const params = [id];
     const result1 = await pool.query(sql, params);

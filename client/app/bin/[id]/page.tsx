@@ -17,6 +17,8 @@ import { useParams } from "next/navigation";
 import LoadingSpinner from "@/components/LoadingSpinner/LoadingSpinner";
 import { useAuthStore } from "@/store/auth.store";
 
+let socketInitialized: boolean = false;
+
 interface Temp {
   time: Date;
   temp: number;
@@ -62,7 +64,11 @@ export default function BinDetailsPage() {
 
   // Socket
   useEffect(() => {
+    if (socketInitialized) return;
+
     const ws = createSocket();
+    socketInitialized = true;
+
     ws.onmessage = (e) => {
       const payload = JSON.parse(e.data);
       if (payload.id == "temp") {

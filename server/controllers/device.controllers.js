@@ -39,10 +39,9 @@ const handleReceivingMqttMessage = async (binId, device, data) => {
       const sendMailPromises = managers.map((user) =>
         sendMail("Smart Bin", `Your bin (ID-${binId}) is full`, user.email)
       );
-      await Promise.all(sendMailPromises);
-      deviceServices.sendFillLevel(data);
+      await Promise.all(sendMailPromises)
     }
-  }
+  } 
   if (device === "temp") {
     await deviceServices.createTempHistoryService(binId, data);
     deviceServices.sendTemp(data);

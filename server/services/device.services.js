@@ -101,17 +101,21 @@ const getOledMessageService = async (id) => {
 const updateOledMessageService = async (id, message) => {
   try {
     const display_fill = message === "RESET" ? true : false;
-    const sql = message !== "RESET" ? `
+    const sql =
+      message !== "RESET"
+        ? `
                 UPDATE public.bins  
                 SET message = $2,
                     is_display_fill = $3
                 WHERE id = $1
-                ` : `
+                `
+        : `
                 UPDATE public.bins  
                 SET is_display_fill = $1
                 WHERE id = $2
-                ` ;
-    const params = message !== "RESET" ? [id, message, display_fill] : [display_fill, id];
+                `;
+    const params =
+      message !== "RESET" ? [id, message, display_fill] : [display_fill, id];
     const promises = [
       createEventLogService(
         id,

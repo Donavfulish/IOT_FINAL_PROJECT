@@ -92,9 +92,9 @@ export default function BinDetailsPage() {
                 ...prev,
                 events: [
                   {
-                    message: 'The bin is full',
+                    message: "The bin is full",
                     time_at: new Date(),
-                    type: 'danger',
+                    type: "danger",
                   },
                   ...prev.events,
                 ],

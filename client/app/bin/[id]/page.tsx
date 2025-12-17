@@ -85,22 +85,30 @@ export default function BinDetailsPage() {
               }
             : prev
         );
-      } else if (payload.id == "fill_level") {
-        setBinDetail((prev) =>
-          prev
-            ? {
-                ...prev,
-                events: [
+      } else if (payload.id === "ultra") {
+        const fillLevel = Number(payload.fillLevel);
+
+        setBinDetail((prev): BinDetailType | undefined => {
+          if (!prev) return prev;
+
+          const events =
+            fillLevel === 100
+              ? ([
                   {
                     message: "The bin is full",
                     time_at: new Date(),
                     type: "danger",
                   },
                   ...prev.events,
-                ],
-              }
-            : prev
-        );
+                ] as typeof prev.events)
+              : prev.events;
+
+          return {
+            ...prev,
+            fill_level: payload.fillLevel, // đúng kiểu
+            events,
+          };
+        });
       }
     };
 
